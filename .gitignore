@@ -34,7 +34,7 @@ htmlcov/
 
 # Data cache
 .cache/
-data/
+/data/
 
 # Environment
 .env

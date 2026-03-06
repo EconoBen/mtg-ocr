@@ -80,13 +80,13 @@ Write tests first (TDD), then implement.
 
 Write tests first (TDD), then implement. Use httpx with rate limiting (75ms between requests). Reference `/Users/blabaschin/Documents/GitHub/mtg-vault/src/mtg_vault/sources/scryfall.py` for patterns.
 
-- [ ] Write failing tests in `tests/unit/test_scryfall.py`:
+- [x] Write failing tests in `tests/unit/test_scryfall.py`:
   - Test bulk data URL fetch returns valid JSON structure
   - Test card dictionary building from bulk data
   - Test set code mapping
   - Test image URI extraction
   - Test rate limiting behavior (mock httpx)
-- [ ] Implement `src/mtg_ocr/data/scryfall.py`:
+- [x] Implement `src/mtg_ocr/data/scryfall.py`:
   ```python
   SCRYFALL_BULK_URL = "https://api.scryfall.com/bulk-data"
   RATE_LIMIT_SECONDS = 0.075
@@ -111,9 +111,9 @@ Write tests first (TDD), then implement. Use httpx with rate limiting (75ms betw
           """Return list of (scryfall_id, normal_image_uri) for embedding computation."""
           ...
   ```
-- [ ] Create `src/mtg_ocr/data/models.py` with `CardInfo` dataclass
-- [ ] Run: `uv run pytest tests/unit/test_scryfall.py -v` — all tests pass
-- [ ] Update bead: `bd update mtg_ocr-7ut --status closed --json`
+- [x] Create `src/mtg_ocr/data/models.py` with `CardInfo` dataclass
+- [x] Run: `uv run pytest tests/unit/test_scryfall.py -v` — all tests pass
+- [x] Update bead: `bd update mtg_ocr-7ut --status closed --json`
 
 ### Task 3: Visual Encoder Abstraction + MobileCLIP Wrapper (T3, bead mtg_ocr-xxq)
 
