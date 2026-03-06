@@ -1,4 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+*.egg
+dist/
+build/
+.eggs/
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.ruff_cache/
+
+# Model files
+*.pt
+*.pth
+*.onnx
+*.mlpackage
+*.mlmodel
+
+# Data cache
+.cache/
+data/
+
+# Environment
+.env
+.env.local
 
 # Dolt database files (added by bd init)
 .dolt/
 *.db
+
+# ralphex progress logs
+.ralphex/progress/

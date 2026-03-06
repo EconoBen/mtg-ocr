@@ -19,7 +19,7 @@ Reference project: `/Users/blabaschin/Documents/GitHub/mtg-vault/` uses Python 3
 
 Write tests first (TDD), then implement.
 
-- [ ] Create `pyproject.toml` with:
+- [x] Create `pyproject.toml` with:
   - Package name: `mtg-ocr`
   - Python requires: `>=3.12`
   - Dependencies: `torch`, `open-clip-torch`, `mobileclip`, `onnxruntime`, `httpx`, `pydantic>=2.6`, `Pillow`, `numpy`, `imagehash`
@@ -28,7 +28,7 @@ Write tests first (TDD), then implement.
   - Dev deps: `pytest>=8.0`, `pytest-cov>=5.0`, `ruff>=0.8`
   - Entry point: `mtg-ocr = "mtg_ocr.__main__:main"`
   - Note: for `mobileclip`, install from Apple's repo: `pip install git+https://github.com/apple/ml-mobileclip.git`
-- [ ] Create package directory structure:
+- [x] Create package directory structure:
   ```
   src/mtg_ocr/__init__.py          # __version__ = "0.1.0"
   src/mtg_ocr/__main__.py          # CLI placeholder with argparse
@@ -48,8 +48,8 @@ Write tests first (TDD), then implement.
   configs/                         # Training configs
   scripts/                         # RunPod scripts
   ```
-- [ ] Create `.gitignore` with Python defaults, model files (*.pt, *.onnx, *.mlpackage), data cache dirs, .env
-- [ ] Create `src/mtg_ocr/models/card.py` with Pydantic models:
+- [x] Create `.gitignore` with Python defaults, model files (*.pt, *.onnx, *.mlpackage), data cache dirs, .env
+- [x] Create `src/mtg_ocr/models/card.py` with Pydantic models:
   ```python
   class CardMatch(BaseModel):
       scryfall_id: str
@@ -70,11 +70,11 @@ Write tests first (TDD), then implement.
       set_code: str
       embedding: list[float]  # will be stored as numpy array in practice
   ```
-- [ ] Run: `uv venv --python python3.12 && source .venv/bin/activate && uv pip install -e ".[dev]"` — package installs
-- [ ] Run: `uv run python -c "import mtg_ocr; print(mtg_ocr.__version__)"` — prints 0.1.0
-- [ ] Run: `uv run ruff check src/ tests/` — no lint errors
-- [ ] Run: `uv run pytest tests/ -q` — tests collected (even if empty)
-- [ ] Update bead: `bd update mtg_ocr-dxo --status closed --json`
+- [x] Run: `uv venv --python python3.12 && source .venv/bin/activate && uv pip install -e ".[dev]"` — package installs
+- [x] Run: `uv run python -c "import mtg_ocr; print(mtg_ocr.__version__)"` — prints 0.1.0
+- [x] Run: `uv run ruff check src/ tests/` — no lint errors
+- [x] Run: `uv run pytest tests/ -q` — tests collected (even if empty)
+- [x] Update bead: `bd update mtg_ocr-dxo --status closed --json`
 
 ### Task 2: Scryfall Data Pipeline (T2, bead mtg_ocr-7ut)
 
