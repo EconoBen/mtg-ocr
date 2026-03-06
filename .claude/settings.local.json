@@ -1,0 +1,6 @@
+{
+  "enabledMcpjsonServers": [
+    "ClaudeTalkToFigma"
+  ],
+  "enableAllProjectMcpServers": true
+}
