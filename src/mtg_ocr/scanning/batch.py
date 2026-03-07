@@ -14,7 +14,9 @@ from mtg_ocr.pipeline import CardIdentificationPipeline
 
 def _load_image(path: Path) -> tuple[Path, Image.Image]:
     """Load a single image from disk (I/O bound, suitable for threading)."""
-    return path, Image.open(path).convert("RGB")
+    with Image.open(path) as im:
+        img = im.convert("RGB").copy()
+    return path, img
 
 
 class BatchScanner:

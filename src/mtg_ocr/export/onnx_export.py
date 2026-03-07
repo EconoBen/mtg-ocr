@@ -68,7 +68,17 @@ class ONNXExporter:
         model.eval()
 
         input_shape = (1, 3, 224, 224)
-        dummy_input = torch.randn(*input_shape)
+        # Ensure dummy_input is created on the same device as the model to avoid
+        # device mismatch errors when the model has been moved to CUDA/MPS.
+        model_device = torch.device("cpu")
+        first_param = next(model.parameters(), None)
+        if first_param is not None:
+            model_device = first_param.device
+        else:
+            first_buffer = next(model.buffers(), None)
+            if first_buffer is not None:
+                model_device = first_buffer.device
+        dummy_input = torch.randn(*input_shape, device=model_device)
 
         # Export to ONNX — use the image encoder specifically
         if hasattr(model, "encode_image"):
@@ -155,7 +165,9 @@ class ONNXExporter:
         # Get ONNX output
         preprocess = self._get_preprocess()
         if preprocess is not None:
-            input_tensor = preprocess(test_image).unsqueeze(0).numpy()
+            input_tensor = (
+                preprocess(test_image).unsqueeze(0).detach().cpu().numpy()
+            )
         else:
             # Fallback: resize and normalize manually
             img_resized = test_image.resize((224, 224))

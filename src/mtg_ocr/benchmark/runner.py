@@ -58,8 +58,12 @@ class BenchmarkRunner:
     def total_images(self) -> int:
         return len(self._image_files)
 
-    def run(self) -> BenchmarkResult:
-        """Run full benchmark on corpus."""
+    def run(self, top_k: int = 5) -> BenchmarkResult:
+        """Run full benchmark on corpus.
+
+        Args:
+            top_k: Number of top matches to retrieve for accuracy evaluation.
+        """
         correct_top_1 = 0
         correct_top_5 = 0
         latencies: list[float] = []
@@ -73,7 +77,7 @@ class BenchmarkRunner:
                 img.info["scryfall_id"] = expected_id
 
                 start = time.perf_counter()
-                result = self.pipeline.identify(img, top_k=5)
+                result = self.pipeline.identify(img, top_k=top_k)
                 elapsed_ms = (time.perf_counter() - start) * 1000
                 latencies.append(elapsed_ms)
 
@@ -106,7 +110,7 @@ class BenchmarkRunner:
             failures=failures,
         )
 
-    def run_latency(self, n_iterations: int = 100) -> dict[str, Any]:
+    def run_latency(self, n_iterations: int = 100, top_k: int = 5) -> dict[str, Any]:
         """Run latency-only benchmark."""
         if not self._image_files or n_iterations <= 0:
             return {"mean_latency_ms": 0.0, "p95_latency_ms": 0.0, "n_iterations": 0}
@@ -122,7 +126,7 @@ class BenchmarkRunner:
             latencies: list[float] = []
             for _ in range(n_iterations):
                 start = time.perf_counter()
-                self.pipeline.identify(img, top_k=5)
+                self.pipeline.identify(img, top_k=top_k)
                 elapsed_ms = (time.perf_counter() - start) * 1000
                 latencies.append(elapsed_ms)
 

@@ -28,6 +28,8 @@ def cli() -> None:
 @click.option("--model-dir", type=click.Path(exists=True, file_okay=False, path_type=Path), required=True, help="Directory containing embeddings.npz and model data.")
 def scan(image_path, dir_path, top_k, mode, output, workers, model_dir) -> None:
     """Identify cards from images or scan a directory."""
+    if image_path and dir_path:
+        raise click.UsageError("Options --image and --dir are mutually exclusive; choose one.")
     if not image_path and not dir_path:
         raise click.UsageError("Provide either --image or --dir.")
 
@@ -80,7 +82,7 @@ def benchmark(corpus, top_k, model_dir) -> None:
 
     pipeline = CardIdentificationPipeline.from_pretrained(model_dir)
     runner = BenchmarkRunner(pipeline, corpus)
-    result = runner.run()
+    result = runner.run(top_k=top_k)
 
     click.echo(f"Images: {result.total_images}")
     click.echo(f"Top-1 accuracy: {result.top_1_accuracy:.2%}")
