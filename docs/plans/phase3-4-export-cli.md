@@ -125,7 +125,7 @@ Export the MobileCLIP image encoder to ONNX format.
 
 Export the visual encoder to CoreML format for on-device inference.
 
-- [ ] Create `src/mtg_ocr/export/coreml_export.py`:
+- [x] Create `src/mtg_ocr/export/coreml_export.py`:
   ```python
   class CoreMLExporter:
       """Export visual encoder to CoreML format for iOS deployment."""
@@ -135,15 +135,15 @@ Export the visual encoder to CoreML format for on-device inference.
       def export_from_onnx(self, onnx_path: Path, output_path: Path,
                            compute_units: str = "ALL") -> ExportResult: ...
   ```
-- [ ] Two export paths: direct PyTorch → CoreML via `coremltools`, or ONNX → CoreML as fallback
-- [ ] `compute_units` options: "ALL" (CPU+GPU+ANE), "CPU_AND_GPU", "CPU_ONLY"
-- [ ] Write tests in `tests/unit/test_coreml_export.py`:
+- [x] Two export paths: direct PyTorch → CoreML via `coremltools`, or ONNX → CoreML as fallback
+- [x] `compute_units` options: "ALL" (CPU+GPU+ANE), "CPU_AND_GPU", "CPU_ONLY"
+- [x] Write tests in `tests/unit/test_coreml_export.py`:
   - Mock the encoder to avoid model download
   - Test export produces .mlpackage or .mlmodel file
   - Test both export paths (direct and from ONNX)
   - Test compute_units parameter is passed through
-- [ ] Note: coremltools may not be installed in all environments — tests should skip gracefully with `pytest.importorskip("coremltools")`
-- [ ] Run: `uv run pytest tests/unit/test_coreml_export.py -v` — all tests pass
+- [x] Note: coremltools may not be installed in all environments — tests should skip gracefully with `pytest.importorskip("coremltools")`
+- [x] Run: `uv run pytest tests/unit/test_coreml_export.py -v` — all tests pass
 
 ## Phase 3: CLI & Integration
 
