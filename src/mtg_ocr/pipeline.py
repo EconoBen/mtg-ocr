@@ -80,13 +80,24 @@ class CardIdentificationPipeline:
         cls,
         model_dir: Path,
         scan_mode: ScanMode = ScanMode.HANDHELD,
+        encoder: VisualEncoder | None = None,
     ) -> CardIdentificationPipeline:
-        """Load pipeline from a directory containing model + embeddings."""
+        """Load pipeline from a directory containing model + embeddings.
+
+        Args:
+            model_dir: Directory containing embeddings.npz (and optional encoder checkpoint).
+            scan_mode: Detection mode (handheld or rig).
+            encoder: Custom encoder instance (e.g., fine-tuned). If None, loads
+                     default MobileCLIPEncoder. Pass your fine-tuned encoder here
+                     to ensure query embeddings match the embedding database.
+        """
         model_dir = Path(model_dir)
 
-        from mtg_ocr.encoder.mobileclip import MobileCLIPEncoder
+        if encoder is None:
+            from mtg_ocr.encoder.mobileclip import MobileCLIPEncoder
 
-        encoder = MobileCLIPEncoder()
+            encoder = MobileCLIPEncoder()
+
         index = EmbeddingIndex()
         index.load(model_dir / "embeddings.npz")
         detector = CardDetector(scan_mode=scan_mode)

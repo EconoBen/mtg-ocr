@@ -59,7 +59,9 @@ class EmbeddingIndex:
                 self.metadata[cid] = CardInfo(**info_dict)
 
     def save(self, path: Path) -> None:
-        """Save embeddings to .npz file with FP16 quantization."""
+        """Save embeddings to .npz file with FP16 quantization and metadata sidecar."""
+        import json
+
         if self.embeddings is None:
             raise ValueError("No embeddings to save")
         path = _ensure_npz_suffix(Path(path))
@@ -69,6 +71,20 @@ class EmbeddingIndex:
             embeddings=self.embeddings.astype(np.float16),
             card_ids=np.array(self.card_ids),
         )
+
+        # Save metadata sidecar so load() roundtrip is lossless
+        if self.metadata:
+            meta = {}
+            for cid, info in self.metadata.items():
+                meta[cid] = {
+                    "scryfall_id": info.scryfall_id,
+                    "name": info.name,
+                    "set_code": info.set_code,
+                    "set_name": info.set_name,
+                    "collector_number": info.collector_number,
+                    "image_uris": info.image_uris,
+                }
+            _meta_path(path).write_text(json.dumps(meta))
 
     def add(self, scryfall_id: str, embedding: np.ndarray, card_info: CardInfo) -> None:
         """Add a single card embedding."""
