@@ -176,10 +176,10 @@ Build the command-line interface for all major operations.
 
 ### Task 7: Full Regression & PR
 
-- [ ] `uv run pytest tests/ -v --tb=short` — ALL tests pass (existing + new)
-- [ ] `uv run ruff check src/ tests/` — no lint errors
-- [ ] Verify package installs cleanly: `uv pip install -e .`
-- [ ] Verify CLI entry point works: `uv run mtg-ocr --help`
+- [x] `uv run pytest tests/ -v --tb=short` — ALL tests pass (existing + new)
+- [x] `uv run ruff check src/ tests/` — no lint errors
+- [x] Verify package installs cleanly: `uv pip install -e .`
+- [x] Verify CLI entry point works: `uv run mtg-ocr --help`
 - [ ] Create PR: `gh pr create --title "feat: Phase 3-4 — export pipeline, batch scanning, CLI, test suite" --body "$(cat <<'EOF'
 ## Context
 
