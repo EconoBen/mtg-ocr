@@ -72,7 +72,7 @@ Build the batch scanning orchestrator for the Card Slinger rig.
 
 Implement and test dimension reduction for embeddings (512 -> 256 -> 128).
 
-- [ ] Create `src/mtg_ocr/embeddings/quantize.py` with:
+- [x] Create `src/mtg_ocr/embeddings/quantize.py` with:
   ```python
   class DimensionReducer:
       """Reduce embedding dimensions via PCA or truncation."""
@@ -84,15 +84,15 @@ Implement and test dimension reduction for embeddings (512 -> 256 -> 128).
       @classmethod
       def load(cls, path: Path) -> DimensionReducer: ...
   ```
-- [ ] Support two methods: `"truncation"` (just slice first N dims) and `"pca"` (sklearn-free PCA using numpy SVD)
-- [ ] Create `DimensionReductionReport` dataclass with fields: `original_dim`, `target_dim`, `method`, `variance_retained`, `file_size_reduction_pct`
-- [ ] Write tests in `tests/unit/test_dimension_reduction.py`:
+- [x] Support two methods: `"truncation"` (just slice first N dims) and `"pca"` (sklearn-free PCA using numpy SVD)
+- [x] Create `DimensionReductionReport` dataclass with fields: `original_dim`, `target_dim`, `method`, `variance_retained`, `file_size_reduction_pct`
+- [x] Write tests in `tests/unit/test_dimension_reduction.py`:
   - Truncation preserves first N dimensions exactly
   - PCA output has correct shape and is orthogonal
   - Reduced embeddings maintain relative similarity ordering (top-K matches preserved)
   - Save/load roundtrip preserves the transform
   - Report stats are computed correctly
-- [ ] Run: `uv run pytest tests/unit/test_dimension_reduction.py -v` — all tests pass
+- [x] Run: `uv run pytest tests/unit/test_dimension_reduction.py -v` — all tests pass
 
 ## Phase 2: Export Pipeline
 
