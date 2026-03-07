@@ -10,7 +10,7 @@ requires-python = ">=3.12"
 dependencies = [
     "torch",
     "open-clip-torch",
-    "mobileclip @ git+https://github.com/apple/ml-mobileclip.git",
+    "mobileclip @ git+https://github.com/apple/ml-mobileclip.git@c16bfe5a4feb424762d6bdf5245539120a4ce9ef",
     "onnxruntime",
     "httpx",
     "pydantic>=2.6",

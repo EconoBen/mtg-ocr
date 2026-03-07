@@ -295,6 +295,7 @@ class EmbeddingBuilder:
         # No new cards — just copy existing
         existing_npz = _ensure_npz_suffix(Path(existing_path))
         output_npz = _ensure_npz_suffix(Path(output_path))
+        output_npz.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(existing_npz, output_npz)
         meta_src = _meta_path(existing_npz)
         if meta_src.exists():

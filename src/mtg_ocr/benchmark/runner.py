@@ -108,7 +108,7 @@ class BenchmarkRunner:
 
     def run_latency(self, n_iterations: int = 100) -> dict[str, Any]:
         """Run latency-only benchmark."""
-        if not self._image_files:
+        if not self._image_files or n_iterations <= 0:
             return {"mean_latency_ms": 0.0, "p95_latency_ms": 0.0, "n_iterations": 0}
 
         # Use first image for repeated latency measurement

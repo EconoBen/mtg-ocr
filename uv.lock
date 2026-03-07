@@ -844,7 +844,7 @@ wheels = [
 [[package]]
 name = "mobileclip"
 version = "0.1.0"
-source = { git = "https://github.com/apple/ml-mobileclip.git#c16bfe5a4feb424762d6bdf5245539120a4ce9ef" }
+source = { git = "https://github.com/apple/ml-mobileclip.git?rev=c16bfe5a4feb424762d6bdf5245539120a4ce9ef#c16bfe5a4feb424762d6bdf5245539120a4ce9ef" }
 dependencies = [
     { name = "clip-benchmark" },
     { name = "datasets" },
@@ -901,7 +901,7 @@ requires-dist = [
     { name = "coremltools", marker = "extra == 'export'" },
     { name = "httpx" },
     { name = "imagehash" },
-    { name = "mobileclip", git = "https://github.com/apple/ml-mobileclip.git" },
+    { name = "mobileclip", git = "https://github.com/apple/ml-mobileclip.git?rev=c16bfe5a4feb424762d6bdf5245539120a4ce9ef" },
     { name = "numpy" },
     { name = "onnxruntime" },
     { name = "open-clip-torch" },

@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import json
+import os
+import tempfile
 import time
 from pathlib import Path
 
@@ -43,9 +45,11 @@ class ScryfallClient:
 
         time.sleep(RATE_LIMIT_SECONDS)
 
-        # Write to temp file first, then rename atomically to avoid
-        # corrupt cache if download is interrupted
-        tmp_path = output_path.with_suffix(".tmp")
+        # Write to a unique temp file, then rename atomically to avoid
+        # corrupt cache if download is interrupted or concurrent runs clash
+        fd, tmp_str = tempfile.mkstemp(dir=self.cache_dir, suffix=".tmp")
+        os.close(fd)
+        tmp_path = Path(tmp_str)
         try:
             with httpx.stream("GET", url, timeout=120) as response:
                 response.raise_for_status()

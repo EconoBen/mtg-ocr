@@ -39,6 +39,13 @@ class CardTripletDataset:
             for img_idx in range(len(images)):
                 self._index.append((card_id, img_idx))
 
+        # Validate no empty image lists
+        empty_cards = [cid for cid, imgs in card_images.items() if len(imgs) == 0]
+        if empty_cards:
+            raise ValueError(
+                f"Cards with empty image lists: {empty_cards[:5]}"
+            )
+
         self._card_ids = list(card_images.keys())
 
     def __len__(self) -> int:
