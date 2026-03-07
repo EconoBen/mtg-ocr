@@ -32,15 +32,16 @@ class EmbeddingIndex:
 
     def __init__(self) -> None:
         self.embeddings: np.ndarray | None = None  # (N, D) FP16
+        self._embeddings_f32: np.ndarray | None = None  # cached FP32 for search
         self.card_ids: list[str] = []
         self.metadata: dict[str, CardInfo] = {}
 
     def load(self, path: Path) -> None:
-        """Load pre-computed embeddings from .npz file.
+        """Load pre-computed embeddings from .npz file and optional metadata.
 
-        Note: This loads only embeddings and card_ids. Metadata must be loaded
-        separately via load_metadata() or by using EmbeddingBuilder.load_embeddings()
-        which handles both the .npz and .meta.json sidecar files.
+        Loads embeddings and card_ids from the .npz file. Also attempts to load
+        metadata from a corresponding .meta.json sidecar file. If the sidecar
+        is missing, self.metadata remains empty.
         """
         import json
 
@@ -49,6 +50,7 @@ class EmbeddingIndex:
             raise FileNotFoundError(f"Embedding file not found: {path}")
         data = np.load(path, allow_pickle=False)
         self.embeddings = data["embeddings"].astype(np.float16)
+        self._embeddings_f32 = None  # invalidate cache
         self.card_ids = [s for s in data["card_ids"]]
 
         # Attempt to load metadata sidecar if it exists
@@ -109,9 +111,12 @@ class EmbeddingIndex:
         norm = np.linalg.norm(query)
         if norm > 1e-8:
             query = query / norm
-        emb = self.embeddings.astype(np.float32)
 
-        scores = emb @ query  # (N,)
+        # Cache FP32 conversion to avoid O(N*D) allocation per query
+        if self._embeddings_f32 is None or self._embeddings_f32.shape != self.embeddings.shape:
+            self._embeddings_f32 = self.embeddings.astype(np.float32)
+
+        scores = self._embeddings_f32 @ query  # (N,)
 
         k = min(top_k, len(self.card_ids))
         top_indices = np.argpartition(scores, -k)[-k:]
@@ -141,5 +146,6 @@ class EmbeddingIndex:
     ) -> None:
         """Build index from pre-computed arrays."""
         self.embeddings = embeddings.astype(np.float16)
+        self._embeddings_f32 = None  # invalidate cache
         self.card_ids = list(card_ids)
         self.metadata = dict(metadata)

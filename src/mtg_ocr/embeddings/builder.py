@@ -193,27 +193,28 @@ class EmbeddingBuilder:
         all_embeddings = []
         all_ids = []
 
-        for i in range(0, len(image_uris), batch_size):
-            batch = image_uris[i : i + batch_size]
-            images = []
-            batch_ids = []
-            for scryfall_id, uri in batch:
-                try:
-                    time.sleep(RATE_LIMIT_SECONDS)
-                    resp = httpx.get(uri, timeout=30)
-                    resp.raise_for_status()
+        with httpx.Client(timeout=30) as client:
+            for i in range(0, len(image_uris), batch_size):
+                batch = image_uris[i : i + batch_size]
+                images = []
+                batch_ids = []
+                for scryfall_id, uri in batch:
+                    try:
+                        time.sleep(RATE_LIMIT_SECONDS)
+                        resp = client.get(uri)
+                        resp.raise_for_status()
 
-                    img = Image.open(BytesIO(resp.content)).convert("RGB")
-                    images.append(img)
-                    batch_ids.append(scryfall_id)
-                except (httpx.HTTPError, OSError) as exc:
-                    logger.warning("Failed to download/process card %s: %s", scryfall_id, exc)
-                    continue
+                        img = Image.open(BytesIO(resp.content)).convert("RGB")
+                        images.append(img)
+                        batch_ids.append(scryfall_id)
+                    except (httpx.HTTPError, OSError) as exc:
+                        logger.warning("Failed to download/process card %s: %s", scryfall_id, exc)
+                        continue
 
-            if images:
-                emb = self.encode_batch(images, batch_size=batch_size)
-                all_embeddings.append(emb)
-                all_ids.extend(batch_ids)
+                if images:
+                    emb = self.encode_batch(images, batch_size=batch_size)
+                    all_embeddings.append(emb)
+                    all_ids.extend(batch_ids)
 
         if all_embeddings:
             embeddings = np.concatenate(all_embeddings, axis=0)
@@ -267,19 +268,20 @@ class EmbeddingBuilder:
         new_embeddings_list = []
         new_ids = []
 
-        for scryfall_id, uri in new_uris:
-            try:
-                time.sleep(RATE_LIMIT_SECONDS)
-                resp = httpx.get(uri, timeout=30)
-                resp.raise_for_status()
+        with httpx.Client(timeout=30) as client:
+            for scryfall_id, uri in new_uris:
+                try:
+                    time.sleep(RATE_LIMIT_SECONDS)
+                    resp = client.get(uri)
+                    resp.raise_for_status()
 
-                img = Image.open(BytesIO(resp.content)).convert("RGB")
-                emb = self.encode_batch([img])
-                new_embeddings_list.append(emb)
-                new_ids.append(scryfall_id)
-            except (httpx.HTTPError, OSError) as exc:
-                logger.warning("Failed to download/process card %s: %s", scryfall_id, exc)
-                continue
+                    img = Image.open(BytesIO(resp.content)).convert("RGB")
+                    emb = self.encode_batch([img])
+                    new_embeddings_list.append(emb)
+                    new_ids.append(scryfall_id)
+                except (httpx.HTTPError, OSError) as exc:
+                    logger.warning("Failed to download/process card %s: %s", scryfall_id, exc)
+                    continue
 
         if new_embeddings_list:
             new_emb = np.concatenate(new_embeddings_list, axis=0)
