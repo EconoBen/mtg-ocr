@@ -137,11 +137,16 @@ class DimensionReducer:
             save_dict["components"] = self._components
             save_dict["mean"] = self._mean
 
+        if not str(path).endswith(".npz"):
+            path = Path(str(path) + ".npz")
         np.savez(path, **save_dict)
 
     @classmethod
     def load(cls, path: Path) -> DimensionReducer:
         """Load a fitted reducer from disk."""
+        path = Path(path)
+        if not str(path).endswith(".npz"):
+            path = Path(str(path) + ".npz")
         data = np.load(path, allow_pickle=False)
 
         method = str(data["method"][0])

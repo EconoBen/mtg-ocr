@@ -182,7 +182,7 @@ class ONNXExporter:
         onnx_norm = onnx_output / np.linalg.norm(onnx_output, axis=-1, keepdims=True)
         onnx_embedding = onnx_norm.squeeze(0)
 
-        return bool(np.allclose(pytorch_output, onnx_embedding, rtol=rtol, atol=rtol))
+        return bool(np.allclose(pytorch_output, onnx_embedding, rtol=rtol, atol=1e-5))
 
 
 class _ImageEncoderWrapper(torch.nn.Module):

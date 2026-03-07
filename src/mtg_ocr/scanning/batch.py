@@ -12,11 +12,14 @@ from mtg_ocr.models.card import ScanReport, ScanResult
 from mtg_ocr.pipeline import CardIdentificationPipeline
 
 
-def _load_image(path: Path) -> tuple[Path, Image.Image]:
+def _load_image(path: Path) -> tuple[Path, Image.Image | None]:
     """Load a single image from disk (I/O bound, suitable for threading)."""
-    with Image.open(path) as im:
-        img = im.convert("RGB").copy()
-    return path, img
+    try:
+        with Image.open(path) as im:
+            img = im.convert("RGB").copy()
+        return path, img
+    except (OSError, Image.UnidentifiedImageError):
+        return path, None
 
 
 class BatchScanner:
@@ -92,11 +95,12 @@ class BatchScanner:
         loaded: dict[Path, Image.Image] = {}
         with ThreadPoolExecutor(max_workers=self.workers) as executor:
             for path, img in executor.map(_load_image, images):
-                loaded[path] = img
+                if img is not None:
+                    loaded[path] = img
 
         # Sequential pipeline inference
         results: list[ScanResult] = []
-        for path in images:
+        for path in list(loaded):
             img = loaded[path]
             result = self.pipeline.identify(img, top_k=self.top_k)
             results.append(

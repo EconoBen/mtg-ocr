@@ -118,8 +118,8 @@ class CoreMLExporter:
 
         ct_compute_units = self._resolve_compute_units(ct, compute_units)
 
-        mlmodel = ct.converters.onnx.convert(
-            model=str(onnx_path),
+        mlmodel = ct.convert(
+            str(onnx_path),
             compute_units=ct_compute_units,
         )
 

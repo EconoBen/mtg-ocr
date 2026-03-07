@@ -34,7 +34,7 @@ class MobileCLIPEncoder:
 
     def _detect_embedding_dim(self) -> int:
         """Detect embedding dimensionality by running a dummy forward pass."""
-        dummy = torch.zeros(1, 3, 256, 256)
+        dummy = torch.zeros(1, 3, 224, 224)
         with torch.no_grad():
             out = self.model.encode_image(dummy)
         return out.shape[-1]

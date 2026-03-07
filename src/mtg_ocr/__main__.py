@@ -187,6 +187,8 @@ def reduce(input_path, output, dim, method) -> None:
 
     # Save reduced embeddings, preserving card_ids
     output = Path(output)
+    if not str(output).endswith(".npz"):
+        output = Path(str(output) + ".npz")
     output.parent.mkdir(parents=True, exist_ok=True)
     save_dict = {"embeddings": reduced}
     if "card_ids" in data:

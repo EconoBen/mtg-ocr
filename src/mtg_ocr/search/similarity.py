@@ -98,6 +98,7 @@ class EmbeddingIndex:
             self.embeddings = np.concatenate(
                 [self.embeddings.astype(np.float32), embedding], axis=0
             ).astype(np.float16)
+        self._embeddings_f32 = None  # invalidate cache
         self.card_ids.append(scryfall_id)
         self.metadata[scryfall_id] = card_info
 
