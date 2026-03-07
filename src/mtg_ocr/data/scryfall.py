@@ -32,9 +32,29 @@ class ScryfallClient:
 
         raise ValueError(f"Bulk data type '{data_type}' not found")
 
-    def download_bulk_data(self, data_type: str = "default_cards") -> Path:
-        """Download bulk data JSON file. Cache locally."""
+    def download_bulk_data(
+        self, data_type: str = "default_cards", *, force_refresh: bool = False
+    ) -> Path:
+        """Download bulk data JSON file. Cache locally.
+
+        Checks for an existing cached file before making any network calls.
+        If a cached file for this data_type exists and force_refresh is False,
+        it is returned immediately.
+
+        Args:
+            data_type: Scryfall bulk data type (default: "default_cards").
+            force_refresh: If True, always check Scryfall for a newer file.
+        """
         self.cache_dir.mkdir(parents=True, exist_ok=True)
+
+        # Check for any existing cached file before hitting the network.
+        # Scryfall uses hyphens in filenames (e.g. "default-cards-20240101.json")
+        # while the API type uses underscores (e.g. "default_cards").
+        glob_prefix = data_type.replace("_", "-")
+        cached = sorted(self.cache_dir.glob(f"{glob_prefix}-*.json"), reverse=True)
+        if cached and not force_refresh:
+            return cached[0]
+
         url = self.get_bulk_data_url(data_type)
 
         filename = url.rsplit("/", 1)[-1]

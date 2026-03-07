@@ -136,7 +136,7 @@ class TestAccuracyComputation:
         assert result.correct_top_1 == 2
         assert len(result.failures) == 2
 
-    def test_top_5_accuracy(self, tmp_path: Path) -> None:
+    def test_top_k_accuracy(self, tmp_path: Path) -> None:
         entries = [
             {"filename": "card1.png", "scryfall_id": "id-1", "card_name": "Lightning Bolt", "set_code": "M21"},
         ]
@@ -147,7 +147,7 @@ class TestAccuracyComputation:
         runner = BenchmarkRunner(pipeline=pipeline, corpus_dir=corpus_dir)
         result = runner.run()
 
-        assert result.top_5_accuracy == 1.0
+        assert result.top_k_accuracy == 1.0
         assert result.top_1_accuracy == 0.0
 
 
@@ -220,7 +220,7 @@ class TestReportGeneration:
         report = result.to_dict()
         assert isinstance(report, dict)
         assert "top_1_accuracy" in report
-        assert "top_5_accuracy" in report
+        assert "top_k_accuracy" in report
         assert "mean_latency_ms" in report
         assert "p95_latency_ms" in report
         assert "total_images" in report
@@ -229,12 +229,12 @@ class TestReportGeneration:
     def test_result_to_json(self, tmp_path: Path) -> None:
         result = BenchmarkResult(
             top_1_accuracy=0.85,
-            top_5_accuracy=0.95,
+            top_k_accuracy=0.95,
             mean_latency_ms=12.3,
             p95_latency_ms=18.7,
             total_images=100,
             correct_top_1=85,
-            correct_top_5=95,
+            correct_top_k=95,
             failures=[],
         )
         json_str = result.to_json()

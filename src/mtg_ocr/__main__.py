@@ -24,7 +24,7 @@ def cli() -> None:
 @click.option("--top-k", default=5, show_default=True, help="Number of top matches to return.")
 @click.option("--mode", type=click.Choice(["handheld", "rig"]), default="handheld", show_default=True, help="Detection mode.")
 @click.option("--output", type=click.Path(path_type=Path), default=None, help="Output JSON report path (for --dir).")
-@click.option("--workers", default=4, show_default=True, help="Parallel image-loading workers (for --dir).")
+@click.option("--workers", default=4, show_default=True, type=click.IntRange(min=1), help="Parallel image-loading workers (for --dir).")
 @click.option("--model-dir", type=click.Path(exists=True, file_okay=False, path_type=Path), required=True, help="Directory containing embeddings.npz and model data.")
 def scan(image_path, dir_path, top_k, mode, output, workers, model_dir) -> None:
     """Identify cards from images or scan a directory."""
@@ -86,7 +86,7 @@ def benchmark(corpus, top_k, model_dir) -> None:
 
     click.echo(f"Images: {result.total_images}")
     click.echo(f"Top-1 accuracy: {result.top_1_accuracy:.2%}")
-    click.echo(f"Top-5 accuracy: {result.top_5_accuracy:.2%}")
+    click.echo(f"Top-{result.top_k} accuracy: {result.top_k_accuracy:.2%}")
     click.echo(f"Mean latency: {result.mean_latency_ms:.1f} ms")
     click.echo(f"P95 latency: {result.p95_latency_ms:.1f} ms")
 
@@ -112,7 +112,7 @@ def download(cache_dir) -> None:
 
     client = ScryfallClient(cache_dir=cache_dir)
     click.echo("Downloading Scryfall bulk data...")
-    path = client.download_bulk_data()
+    path = client.download_bulk_data(force_refresh=True)
     click.echo(f"Downloaded to {path}")
 
 

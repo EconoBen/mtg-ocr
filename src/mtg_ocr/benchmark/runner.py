@@ -16,12 +16,13 @@ from PIL import Image
 @dataclass
 class BenchmarkResult:
     top_1_accuracy: float
-    top_5_accuracy: float
+    top_k_accuracy: float
     mean_latency_ms: float
     p95_latency_ms: float
     total_images: int
     correct_top_1: int
-    correct_top_5: int
+    correct_top_k: int
+    top_k: int = 5
     failures: list[dict[str, Any]] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
@@ -65,7 +66,7 @@ class BenchmarkRunner:
             top_k: Number of top matches to retrieve for accuracy evaluation.
         """
         correct_top_1 = 0
-        correct_top_5 = 0
+        correct_top_k = 0
         latencies: list[float] = []
         failures: list[dict[str, Any]] = []
 
@@ -87,7 +88,7 @@ class BenchmarkRunner:
                     correct_top_1 += 1
 
                 if expected_id in top_ids:
-                    correct_top_5 += 1
+                    correct_top_k += 1
                 else:
                     failures.append({
                         "image_path": filename,
@@ -101,12 +102,13 @@ class BenchmarkRunner:
 
         return BenchmarkResult(
             top_1_accuracy=correct_top_1 / total if total > 0 else 0.0,
-            top_5_accuracy=correct_top_5 / total if total > 0 else 0.0,
+            top_k_accuracy=correct_top_k / total if total > 0 else 0.0,
             mean_latency_ms=float(np.mean(latency_arr)),
             p95_latency_ms=float(np.percentile(latency_arr, 95)),
             total_images=total,
             correct_top_1=correct_top_1,
-            correct_top_5=correct_top_5,
+            correct_top_k=correct_top_k,
+            top_k=top_k,
             failures=failures,
         )
 
