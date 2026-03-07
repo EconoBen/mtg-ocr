@@ -19,7 +19,7 @@ Reference project: `/Users/blabaschin/Documents/GitHub/mtg-vault/` uses Python 3
 
 Write tests first (TDD), then implement.
 
-- [ ] Create `pyproject.toml` with:
+- [x] Create `pyproject.toml` with:
   - Package name: `mtg-ocr`
   - Python requires: `>=3.12`
   - Dependencies: `torch`, `open-clip-torch`, `mobileclip`, `onnxruntime`, `httpx`, `pydantic>=2.6`, `Pillow`, `numpy`, `imagehash`
@@ -28,7 +28,7 @@ Write tests first (TDD), then implement.
   - Dev deps: `pytest>=8.0`, `pytest-cov>=5.0`, `ruff>=0.8`
   - Entry point: `mtg-ocr = "mtg_ocr.__main__:main"`
   - Note: for `mobileclip`, install from Apple's repo: `pip install git+https://github.com/apple/ml-mobileclip.git`
-- [ ] Create package directory structure:
+- [x] Create package directory structure:
   ```
   src/mtg_ocr/__init__.py          # __version__ = "0.1.0"
   src/mtg_ocr/__main__.py          # CLI placeholder with argparse
@@ -48,8 +48,8 @@ Write tests first (TDD), then implement.
   configs/                         # Training configs
   scripts/                         # RunPod scripts
   ```
-- [ ] Create `.gitignore` with Python defaults, model files (*.pt, *.onnx, *.mlpackage), data cache dirs, .env
-- [ ] Create `src/mtg_ocr/models/card.py` with Pydantic models:
+- [x] Create `.gitignore` with Python defaults, model files (*.pt, *.onnx, *.mlpackage), data cache dirs, .env
+- [x] Create `src/mtg_ocr/models/card.py` with Pydantic models:
   ```python
   class CardMatch(BaseModel):
       scryfall_id: str
@@ -70,23 +70,23 @@ Write tests first (TDD), then implement.
       set_code: str
       embedding: list[float]  # will be stored as numpy array in practice
   ```
-- [ ] Run: `uv venv --python python3.12 && source .venv/bin/activate && uv pip install -e ".[dev]"` — package installs
-- [ ] Run: `uv run python -c "import mtg_ocr; print(mtg_ocr.__version__)"` — prints 0.1.0
-- [ ] Run: `uv run ruff check src/ tests/` — no lint errors
-- [ ] Run: `uv run pytest tests/ -q` — tests collected (even if empty)
-- [ ] Update bead: `bd update mtg_ocr-dxo --status closed --json`
+- [x] Run: `uv venv --python python3.12 && source .venv/bin/activate && uv pip install -e ".[dev]"` — package installs
+- [x] Run: `uv run python -c "import mtg_ocr; print(mtg_ocr.__version__)"` — prints 0.1.0
+- [x] Run: `uv run ruff check src/ tests/` — no lint errors
+- [x] Run: `uv run pytest tests/ -q` — tests collected (even if empty)
+- [x] Update bead: `bd update mtg_ocr-dxo --status closed --json`
 
 ### Task 2: Scryfall Data Pipeline (T2, bead mtg_ocr-7ut)
 
 Write tests first (TDD), then implement. Use httpx with rate limiting (75ms between requests). Reference `/Users/blabaschin/Documents/GitHub/mtg-vault/src/mtg_vault/sources/scryfall.py` for patterns.
 
-- [ ] Write failing tests in `tests/unit/test_scryfall.py`:
+- [x] Write failing tests in `tests/unit/test_scryfall.py`:
   - Test bulk data URL fetch returns valid JSON structure
   - Test card dictionary building from bulk data
   - Test set code mapping
   - Test image URI extraction
   - Test rate limiting behavior (mock httpx)
-- [ ] Implement `src/mtg_ocr/data/scryfall.py`:
+- [x] Implement `src/mtg_ocr/data/scryfall.py`:
   ```python
   SCRYFALL_BULK_URL = "https://api.scryfall.com/bulk-data"
   RATE_LIMIT_SECONDS = 0.075
@@ -111,21 +111,21 @@ Write tests first (TDD), then implement. Use httpx with rate limiting (75ms betw
           """Return list of (scryfall_id, normal_image_uri) for embedding computation."""
           ...
   ```
-- [ ] Create `src/mtg_ocr/data/models.py` with `CardInfo` dataclass
-- [ ] Run: `uv run pytest tests/unit/test_scryfall.py -v` — all tests pass
-- [ ] Update bead: `bd update mtg_ocr-7ut --status closed --json`
+- [x] Create `src/mtg_ocr/data/models.py` with `CardInfo` dataclass
+- [x] Run: `uv run pytest tests/unit/test_scryfall.py -v` — all tests pass
+- [x] Update bead: `bd update mtg_ocr-7ut --status closed --json`
 
 ### Task 3: Visual Encoder Abstraction + MobileCLIP Wrapper (T3, bead mtg_ocr-xxq)
 
 Write tests first (TDD), then implement.
 
-- [ ] Write failing tests in `tests/unit/test_encoder.py`:
+- [x] Write failing tests in `tests/unit/test_encoder.py`:
   - Test encoder protocol interface
   - Test MobileCLIP encoder loads model
   - Test encode_image returns correct shape tensor
   - Test encode_images batch processing
   - Test embedding normalization (unit vectors)
-- [ ] Implement `src/mtg_ocr/encoder/base.py`:
+- [x] Implement `src/mtg_ocr/encoder/base.py`:
   ```python
   from typing import Protocol
   import numpy as np
@@ -138,7 +138,7 @@ Write tests first (TDD), then implement.
       def encode_image(self, image: Image.Image) -> np.ndarray: ...
       def encode_images(self, images: list[Image.Image], batch_size: int = 32) -> np.ndarray: ...
   ```
-- [ ] Implement `src/mtg_ocr/encoder/mobileclip.py`:
+- [x] Implement `src/mtg_ocr/encoder/mobileclip.py`:
   ```python
   class MobileCLIPEncoder:
       """MobileCLIP-S0 visual encoder wrapper.
@@ -160,21 +160,21 @@ Write tests first (TDD), then implement.
           ...
   ```
   Note: MobileCLIP may need to be installed from Apple's GitHub repo. If `mobileclip` package is not available via pip, use `open_clip_torch` with a compatible architecture, or download and load the checkpoint directly. Check https://github.com/apple/ml-mobileclip for the latest installation instructions. The key is to get a working image encoder that produces embeddings — if MobileCLIP-S0 specifically is hard to install, fall back to `open_clip` with `ViT-B-32` as a temporary placeholder and document the fallback.
-- [ ] Run: `uv run pytest tests/unit/test_encoder.py -v` — all tests pass
-- [ ] Update bead: `bd update mtg_ocr-xxq --status closed --json`
+- [x] Run: `uv run pytest tests/unit/test_encoder.py -v` — all tests pass
+- [x] Update bead: `bd update mtg_ocr-xxq --status closed --json`
 
 ### Task 4: Embedding Similarity Search (T4, bead mtg_ocr-z27)
 
 Write tests first (TDD), then implement.
 
-- [ ] Write failing tests in `tests/unit/test_search.py`:
+- [x] Write failing tests in `tests/unit/test_search.py`:
   - Test loading embeddings from file
   - Test dot product search returns correct top-K
   - Test FP16 quantization roundtrip
   - Test search with normalized vectors (cosine similarity)
   - Test empty database handling
   - Test search latency under 10ms for 30K embeddings (synthetic data)
-- [ ] Implement `src/mtg_ocr/search/similarity.py`:
+- [x] Implement `src/mtg_ocr/search/similarity.py`:
   ```python
   class EmbeddingIndex:
       """Exact nearest-neighbor search via dot product.
@@ -210,19 +210,19 @@ Write tests first (TDD), then implement.
           """Build index from pre-computed arrays."""
           ...
   ```
-- [ ] Run: `uv run pytest tests/unit/test_search.py -v` — all tests pass
-- [ ] Update bead: `bd update mtg_ocr-z27 --status closed --json`
+- [x] Run: `uv run pytest tests/unit/test_search.py -v` — all tests pass
+- [x] Update bead: `bd update mtg_ocr-z27 --status closed --json`
 
 ### Task 5: Benchmarking Framework (T5, bead mtg_ocr-xrp)
 
 Write tests first (TDD), then implement.
 
-- [ ] Write failing tests in `tests/unit/test_benchmark.py`:
+- [x] Write failing tests in `tests/unit/test_benchmark.py`:
   - Test benchmark runner loads test corpus
   - Test accuracy computation (top-1, top-5)
   - Test latency measurement (mean, P95)
   - Test report generation (dict/JSON output)
-- [ ] Implement `src/mtg_ocr/benchmark/runner.py`:
+- [x] Implement `src/mtg_ocr/benchmark/runner.py`:
   ```python
   @dataclass
   class BenchmarkResult:
@@ -253,9 +253,9 @@ Write tests first (TDD), then implement.
           """Run latency-only benchmark."""
           ...
   ```
-- [ ] Create `tests/fixtures/ground_truth.json` with a small sample (use 5-10 placeholder entries — actual card images will be added manually)
-- [ ] Run: `uv run pytest tests/unit/test_benchmark.py -v` — all tests pass
-- [ ] Update bead: `bd update mtg_ocr-xrp --status closed --json`
+- [x] Create `tests/fixtures/ground_truth.json` with a small sample (use 5-10 placeholder entries — actual card images will be added manually)
+- [x] Run: `uv run pytest tests/unit/test_benchmark.py -v` — all tests pass
+- [x] Update bead: `bd update mtg_ocr-xrp --status closed --json`
 
 ## Phase 2: Embedding Database & Pipeline
 
@@ -263,13 +263,13 @@ Write tests first (TDD), then implement.
 
 Write tests first (TDD), then implement. This is T7 in the plan but can run in parallel with T6.
 
-- [ ] Write failing tests in `tests/unit/test_detection.py`:
+- [x] Write failing tests in `tests/unit/test_detection.py`:
   - Test card contour detection on a synthetic test image (white rectangle on dark background)
   - Test perspective correction produces upright rectangle
   - Test ScanMode enum (handheld, rig)
   - Test no card found returns None
   - Test multiple cards detected returns largest
-- [ ] Implement `src/mtg_ocr/detection/card_detector.py`:
+- [x] Implement `src/mtg_ocr/detection/card_detector.py`:
   ```python
   from enum import StrEnum
 
@@ -313,20 +313,20 @@ Write tests first (TDD), then implement. This is T7 in the plan but can run in p
       bounding_box: tuple[int, int, int, int]  # x, y, w, h in original image
       scan_mode: ScanMode
   ```
-- [ ] Create a synthetic test image in `tests/fixtures/` — a white rectangle (63x88 ratio) on dark background, for unit testing
-- [ ] Run: `uv run pytest tests/unit/test_detection.py -v` — all tests pass
-- [ ] Update bead: `bd update mtg_ocr-4g7 --status closed --json`
+- [x] Create a synthetic test image in `tests/fixtures/` — a white rectangle (63x88 ratio) on dark background, for unit testing
+- [x] Run: `uv run pytest tests/unit/test_detection.py -v` — all tests pass
+- [x] Update bead: `bd update mtg_ocr-4g7 --status closed --json`
 
 ### Task 7: Embedding Computation Script for RunPod (T6, bead mtg_ocr-llx)
 
 Write the script and infrastructure for computing embeddings on RunPod GPU. The actual RunPod execution is manual.
 
-- [ ] Write failing tests in `tests/unit/test_embeddings.py`:
+- [x] Write failing tests in `tests/unit/test_embeddings.py`:
   - Test EmbeddingBuilder processes a batch of images
   - Test embeddings are normalized (unit length)
   - Test save/load roundtrip with FP16 quantization
   - Test incremental update (add new cards to existing database)
-- [ ] Implement `src/mtg_ocr/embeddings/builder.py`:
+- [x] Implement `src/mtg_ocr/embeddings/builder.py`:
   ```python
   class EmbeddingBuilder:
       """Build card embedding database from Scryfall images.
@@ -351,7 +351,7 @@ Write the script and infrastructure for computing embeddings on RunPod GPU. The 
           """Incrementally update embeddings with new cards only."""
           ...
   ```
-- [ ] Create `scripts/compute_embeddings.py` — standalone RunPod script:
+- [x] Create `scripts/compute_embeddings.py` — standalone RunPod script:
   ```python
   """Compute card embeddings on RunPod GPU.
 
@@ -362,20 +362,20 @@ Write the script and infrastructure for computing embeddings on RunPod GPU. The 
   Estimated time: ~15-30 min on A40, cost ~$1-2.
   """
   ```
-- [ ] Run: `uv run pytest tests/unit/test_embeddings.py -v` — all tests pass
-- [ ] Update bead: `bd update mtg_ocr-llx --status closed --json`
+- [x] Run: `uv run pytest tests/unit/test_embeddings.py -v` — all tests pass
+- [x] Update bead: `bd update mtg_ocr-llx --status closed --json`
 
 ### Task 8: End-to-End Pipeline (T8, bead mtg_ocr-bhe)
 
 Write tests first (TDD), then implement. This wires everything together.
 
-- [ ] Write failing tests in `tests/unit/test_pipeline.py`:
+- [x] Write failing tests in `tests/unit/test_pipeline.py`:
   - Test pipeline initialization with all components
   - Test identify() with a mock encoder and pre-built index
   - Test identify() returns CardMatch list sorted by confidence
   - Test identify_batch() for rig mode
   - Test pipeline handles "no card detected" gracefully
-- [ ] Implement `src/mtg_ocr/pipeline.py`:
+- [x] Implement `src/mtg_ocr/pipeline.py`:
   ```python
   class CardIdentificationPipeline:
       """End-to-end card identification pipeline.
@@ -410,20 +410,20 @@ Write tests first (TDD), then implement. This wires everything together.
           """Load pipeline from a directory containing model + embeddings."""
           ...
   ```
-- [ ] Run: `uv run pytest tests/unit/test_pipeline.py -v` — all tests pass
-- [ ] Run: `uv run pytest tests/ -q` — ALL tests pass (full suite regression)
-- [ ] Run: `uv run ruff check src/ tests/` — no lint errors
-- [ ] Update bead: `bd update mtg_ocr-bhe --status closed --json`
+- [x] Run: `uv run pytest tests/unit/test_pipeline.py -v` — all tests pass
+- [x] Run: `uv run pytest tests/ -q` — ALL tests pass (full suite regression)
+- [x] Run: `uv run ruff check src/ tests/` — no lint errors
+- [x] Update bead: `bd update mtg_ocr-bhe --status closed --json`
 
 ### Task 9: Training Data Preparation Script (T11, bead mtg_ocr-qwk)
 
 Write the augmentation pipeline and training data preparation. This creates the infrastructure for Phase 3 fine-tuning.
 
-- [ ] Write failing tests in `tests/unit/test_training.py`:
+- [x] Write failing tests in `tests/unit/test_training.py`:
   - Test augmentation pipeline produces valid images
   - Test triplet generation (anchor, positive, negative)
   - Test augmentation includes glare, blur, angle, foil simulation
-- [ ] Implement `src/mtg_ocr/training/augmentation.py`:
+- [x] Implement `src/mtg_ocr/training/augmentation.py`:
   ```python
   class CardAugmentation:
       """Image augmentation pipeline for training data.
@@ -440,7 +440,7 @@ Write the augmentation pipeline and training data preparation. This creates the 
           """Apply random augmentation to a card image."""
           ...
   ```
-- [ ] Implement `src/mtg_ocr/training/dataset.py`:
+- [x] Implement `src/mtg_ocr/training/dataset.py`:
   ```python
   class CardTripletDataset:
       """Generate training triplets for contrastive learning.
@@ -452,13 +452,13 @@ Write the augmentation pipeline and training data preparation. This creates the 
       """
       ...
   ```
-- [ ] Create `scripts/prepare_training_data.py` — downloads images, generates augmented triplets
-- [ ] Run: `uv run pytest tests/unit/test_training.py -v` — all tests pass
-- [ ] Update bead: `bd update mtg_ocr-qwk --status closed --json`
+- [x] Create `scripts/prepare_training_data.py` — downloads images, generates augmented triplets
+- [x] Run: `uv run pytest tests/unit/test_training.py -v` — all tests pass
+- [x] Update bead: `bd update mtg_ocr-qwk --status closed --json`
 
 ### Task 10: Final Validation & PR
 
-- [ ] Run: `uv run pytest tests/ -v --tb=short` — all tests pass
-- [ ] Run: `uv run ruff check src/ tests/` — no lint errors
-- [ ] Run: `uv run python -c "import mtg_ocr; print(mtg_ocr.__version__)"` — prints 0.1.0
-- [ ] Create PR: `gh pr create --title "feat: Phase 1-2 foundation — visual encoder, embedding pipeline, card detection" --body "## Context\n\nFoundation for MTG card visual identification system. Implements MobileCLIP-S0 encoder, embedding similarity search, card detection, Scryfall data pipeline, and end-to-end identification pipeline.\n\n## What changed\n\n- Project structure with full package layout\n- Scryfall bulk data pipeline for card dictionary\n- MobileCLIP-S0 visual encoder wrapper\n- Embedding similarity search (exact NN, FP16)\n- OpenCV card detection with perspective correction\n- End-to-end identification pipeline\n- Benchmarking framework\n- Training data augmentation pipeline\n- RunPod embedding computation script\n\n## Test plan\n\n- [x] All unit tests pass\n- [x] Ruff lint clean\n- [x] Package installs and imports\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"`
+- [x] Run: `uv run pytest tests/ -v --tb=short` — all tests pass
+- [x] Run: `uv run ruff check src/ tests/` — no lint errors
+- [x] Run: `uv run python -c "import mtg_ocr; print(mtg_ocr.__version__)"` — prints 0.1.0
+- [x] Create PR: `gh pr create --title "feat: Phase 1-2 foundation — visual encoder, embedding pipeline, card detection" --body "## Context\n\nFoundation for MTG card visual identification system. Implements MobileCLIP-S0 encoder, embedding similarity search, card detection, Scryfall data pipeline, and end-to-end identification pipeline.\n\n## What changed\n\n- Project structure with full package layout\n- Scryfall bulk data pipeline for card dictionary\n- MobileCLIP-S0 visual encoder wrapper\n- Embedding similarity search (exact NN, FP16)\n- OpenCV card detection with perspective correction\n- End-to-end identification pipeline\n- Benchmarking framework\n- Training data augmentation pipeline\n- RunPod embedding computation script\n\n## Test plan\n\n- [x] All unit tests pass\n- [x] Ruff lint clean\n- [x] Package installs and imports\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)"`

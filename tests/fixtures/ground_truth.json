@@ -1,0 +1,42 @@
+{
+  "lightning_bolt_m21.png": {
+    "scryfall_id": "d4ba37b5-1c48-4563-bc39-2b2ae7d67f3c",
+    "card_name": "Lightning Bolt",
+    "set_code": "M21"
+  },
+  "counterspell_mh2.png": {
+    "scryfall_id": "1920e048-fc1e-4eac-95b6-0e091be8f58a",
+    "card_name": "Counterspell",
+    "set_code": "MH2"
+  },
+  "dark_ritual_a25.png": {
+    "scryfall_id": "95f27eeb-6f14-4db3-adb9-9be5ed76b34b",
+    "card_name": "Dark Ritual",
+    "set_code": "A25"
+  },
+  "swords_to_plowshares_2xm.png": {
+    "scryfall_id": "06d67c87-ae38-4b84-98da-818e451a727f",
+    "card_name": "Swords to Plowshares",
+    "set_code": "2XM"
+  },
+  "brainstorm_c21.png": {
+    "scryfall_id": "b6e16f14-7847-4384-b8b5-aa1e7e3a0a89",
+    "card_name": "Brainstorm",
+    "set_code": "C21"
+  },
+  "sol_ring_c21.png": {
+    "scryfall_id": "4cbc6901-6a4a-4d0a-83ea-7eefa3b35021",
+    "card_name": "Sol Ring",
+    "set_code": "C21"
+  },
+  "path_to_exile_2xm.png": {
+    "scryfall_id": "e9d36855-c38a-4bba-a642-cff3f25e7f87",
+    "card_name": "Path to Exile",
+    "set_code": "2XM"
+  },
+  "birds_of_paradise_m11.png": {
+    "scryfall_id": "f1e5a535-2a5e-4572-ab6a-f244bef91f7e",
+    "card_name": "Birds of Paradise",
+    "set_code": "M11"
+  }
+}

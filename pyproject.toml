@@ -1,0 +1,56 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mtg-ocr"
+version = "0.1.0"
+description = "MTG card visual identification using MobileCLIP embeddings"
+requires-python = ">=3.12"
+dependencies = [
+    "torch",
+    "open-clip-torch",
+    "mobileclip @ git+https://github.com/apple/ml-mobileclip.git@c16bfe5a4feb424762d6bdf5245539120a4ce9ef",
+    "onnxruntime",
+    "httpx",
+    "pydantic>=2.6",
+    "Pillow",
+    "numpy",
+    "imagehash",
+    "opencv-python-headless>=4.8",
+]
+
+[project.optional-dependencies]
+training = [
+    "albumentations",
+    "paddle2onnx",
+]
+export = [
+    "coremltools",
+    "paddle2onnx",
+]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "ruff>=0.8",
+]
+
+[project.scripts]
+mtg-ocr = "mtg_ocr.__main__:main"
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mtg_ocr"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+]
+
+[tool.ruff]
+src = ["src", "tests"]
+line-length = 100
