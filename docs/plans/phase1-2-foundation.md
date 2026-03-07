@@ -217,12 +217,12 @@ Write tests first (TDD), then implement.
 
 Write tests first (TDD), then implement.
 
-- [ ] Write failing tests in `tests/unit/test_benchmark.py`:
+- [x] Write failing tests in `tests/unit/test_benchmark.py`:
   - Test benchmark runner loads test corpus
   - Test accuracy computation (top-1, top-5)
   - Test latency measurement (mean, P95)
   - Test report generation (dict/JSON output)
-- [ ] Implement `src/mtg_ocr/benchmark/runner.py`:
+- [x] Implement `src/mtg_ocr/benchmark/runner.py`:
   ```python
   @dataclass
   class BenchmarkResult:
@@ -253,9 +253,9 @@ Write tests first (TDD), then implement.
           """Run latency-only benchmark."""
           ...
   ```
-- [ ] Create `tests/fixtures/ground_truth.json` with a small sample (use 5-10 placeholder entries — actual card images will be added manually)
-- [ ] Run: `uv run pytest tests/unit/test_benchmark.py -v` — all tests pass
-- [ ] Update bead: `bd update mtg_ocr-xrp --status closed --json`
+- [x] Create `tests/fixtures/ground_truth.json` with a small sample (use 5-10 placeholder entries — actual card images will be added manually)
+- [x] Run: `uv run pytest tests/unit/test_benchmark.py -v` — all tests pass
+- [x] Update bead: `bd update mtg_ocr-xrp --status closed --json`
 
 ## Phase 2: Embedding Database & Pipeline
 
