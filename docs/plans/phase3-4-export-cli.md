@@ -151,7 +151,7 @@ Export the visual encoder to CoreML format for on-device inference.
 
 Build the command-line interface for all major operations.
 
-- [ ] Update `src/mtg_ocr/__main__.py` to use `click` (add to pyproject.toml dependencies) with subcommands:
+- [x] Update `src/mtg_ocr/__main__.py` to use `click` (add to pyproject.toml dependencies) with subcommands:
   ```
   mtg-ocr scan --image <path> [--top-k 5] [--mode handheld|rig]
   mtg-ocr scan --dir <path> [--output report.json] [--workers 4]
@@ -163,16 +163,16 @@ Build the command-line interface for all major operations.
   mtg-ocr export onnx --output <path> [--quantize]
   mtg-ocr export coreml --output <path> [--compute-units ALL]
   ```
-- [ ] Each subcommand should have `--help` with clear descriptions
-- [ ] `scan --image` uses `CardIdentificationPipeline.from_pretrained()` and prints results as formatted table
-- [ ] `scan --dir` uses `BatchScanner` and writes JSON report
-- [ ] Add `click` to pyproject.toml dependencies and add `[project.scripts]` entry: `mtg-ocr = "mtg_ocr.__main__:cli"`
-- [ ] Write tests in `tests/unit/test_cli.py` using `click.testing.CliRunner`:
+- [x] Each subcommand should have `--help` with clear descriptions
+- [x] `scan --image` uses `CardIdentificationPipeline.from_pretrained()` and prints results as formatted table
+- [x] `scan --dir` uses `BatchScanner` and writes JSON report
+- [x] Add `click` to pyproject.toml dependencies and add `[project.scripts]` entry: `mtg-ocr = "mtg_ocr.__main__:cli"`
+- [x] Write tests in `tests/unit/test_cli.py` using `click.testing.CliRunner`:
   - Test `--help` works for all subcommands
   - Test `scan --image` with a mock pipeline
   - Test `data download` with a mock Scryfall client
   - Test `embeddings reduce` with synthetic data
-- [ ] Run: `uv run pytest tests/unit/test_cli.py -v` — all tests pass
+- [x] Run: `uv run pytest tests/unit/test_cli.py -v` — all tests pass
 
 ### Task 7: Full Regression & PR
 
