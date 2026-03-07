@@ -66,7 +66,17 @@ class CoreMLExporter:
         wrapper.eval()
 
         input_shape = (1, 3, 224, 224)
-        dummy_input = torch.randn(*input_shape)
+        # Ensure dummy_input is created on the same device as the model to avoid
+        # device mismatch errors when the model has been moved to CUDA/MPS.
+        model_device = torch.device("cpu")
+        first_param = next(wrapper.parameters(), None)
+        if first_param is not None:
+            model_device = first_param.device
+        else:
+            first_buffer = next(wrapper.buffers(), None)
+            if first_buffer is not None:
+                model_device = first_buffer.device
+        dummy_input = torch.randn(*input_shape, device=model_device)
 
         traced = torch.jit.trace(wrapper, dummy_input)
 

@@ -6,12 +6,18 @@ Tests skip gracefully when it is not available.
 
 from __future__ import annotations
 
+import sys
 from unittest.mock import MagicMock
 
 import pytest
 import torch
 
 ct = pytest.importorskip("coremltools", reason="coremltools not installed")
+
+_SKIP_COREML_EXPORT = pytest.mark.skipif(
+    sys.version_info >= (3, 14),
+    reason="coremltools BlobWriter is incompatible with Python 3.14+",
+)
 
 from mtg_ocr.export.coreml_export import CoreMLExporter, ExportResult  # noqa: E402
 
@@ -70,6 +76,7 @@ class TestExportResult:
 
 
 class TestCoreMLExporter:
+    @_SKIP_COREML_EXPORT
     def test_export_produces_mlpackage(self, tmp_path):
         encoder = _make_mock_encoder(embedding_dim=16)
         exporter = CoreMLExporter(encoder)
@@ -84,6 +91,7 @@ class TestCoreMLExporter:
         assert result.input_shape == (1, 3, 224, 224)
         assert result.output_shape[1] == 16
 
+    @_SKIP_COREML_EXPORT
     def test_export_creates_parent_directories(self, tmp_path):
         encoder = _make_mock_encoder()
         exporter = CoreMLExporter(encoder)
@@ -94,6 +102,7 @@ class TestCoreMLExporter:
         assert output_path.exists()
         assert result.output_path == output_path
 
+    @_SKIP_COREML_EXPORT
     def test_export_cpu_only(self, tmp_path):
         encoder = _make_mock_encoder()
         exporter = CoreMLExporter(encoder)
@@ -104,6 +113,7 @@ class TestCoreMLExporter:
         assert result.compute_units == "CPU_ONLY"
         assert output_path.exists()
 
+    @_SKIP_COREML_EXPORT
     def test_export_cpu_and_gpu(self, tmp_path):
         encoder = _make_mock_encoder()
         exporter = CoreMLExporter(encoder)
@@ -114,6 +124,7 @@ class TestCoreMLExporter:
         assert result.compute_units == "CPU_AND_GPU"
         assert output_path.exists()
 
+    @_SKIP_COREML_EXPORT
     def test_export_from_onnx(self, tmp_path):
         from mtg_ocr.export.onnx_export import ONNXExporter
 
