@@ -119,13 +119,13 @@ Write tests first (TDD), then implement. Use httpx with rate limiting (75ms betw
 
 Write tests first (TDD), then implement.
 
-- [ ] Write failing tests in `tests/unit/test_encoder.py`:
+- [x] Write failing tests in `tests/unit/test_encoder.py`:
   - Test encoder protocol interface
   - Test MobileCLIP encoder loads model
   - Test encode_image returns correct shape tensor
   - Test encode_images batch processing
   - Test embedding normalization (unit vectors)
-- [ ] Implement `src/mtg_ocr/encoder/base.py`:
+- [x] Implement `src/mtg_ocr/encoder/base.py`:
   ```python
   from typing import Protocol
   import numpy as np
@@ -138,7 +138,7 @@ Write tests first (TDD), then implement.
       def encode_image(self, image: Image.Image) -> np.ndarray: ...
       def encode_images(self, images: list[Image.Image], batch_size: int = 32) -> np.ndarray: ...
   ```
-- [ ] Implement `src/mtg_ocr/encoder/mobileclip.py`:
+- [x] Implement `src/mtg_ocr/encoder/mobileclip.py`:
   ```python
   class MobileCLIPEncoder:
       """MobileCLIP-S0 visual encoder wrapper.
@@ -160,8 +160,8 @@ Write tests first (TDD), then implement.
           ...
   ```
   Note: MobileCLIP may need to be installed from Apple's GitHub repo. If `mobileclip` package is not available via pip, use `open_clip_torch` with a compatible architecture, or download and load the checkpoint directly. Check https://github.com/apple/ml-mobileclip for the latest installation instructions. The key is to get a working image encoder that produces embeddings — if MobileCLIP-S0 specifically is hard to install, fall back to `open_clip` with `ViT-B-32` as a temporary placeholder and document the fallback.
-- [ ] Run: `uv run pytest tests/unit/test_encoder.py -v` — all tests pass
-- [ ] Update bead: `bd update mtg_ocr-xxq --status closed --json`
+- [x] Run: `uv run pytest tests/unit/test_encoder.py -v` — all tests pass
+- [x] Update bead: `bd update mtg_ocr-xxq --status closed --json`
 
 ### Task 4: Embedding Similarity Search (T4, bead mtg_ocr-z27)
 
