@@ -169,7 +169,7 @@ class TestEmptyDatabase:
 
 class TestSearchLatency:
     @pytest.mark.slow
-    def test_search_30k_under_10ms(self) -> None:
+    def test_search_30k_under_50ms(self) -> None:
         dim = 512
         n = 30_000
         rng = np.random.default_rng(123)
@@ -199,4 +199,4 @@ class TestSearchLatency:
             times.append(elapsed_ms)
 
         mean_ms = sum(times) / len(times)
-        assert mean_ms < 50.0, f"Search took {mean_ms:.1f}ms, expected < 50ms"
+        assert mean_ms < 50.0, f"Search took {mean_ms:.1f}ms, expected < 50ms (relaxed from 10ms for CI variability)"

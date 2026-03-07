@@ -42,13 +42,13 @@ class TestCardAugmentationProducesValidImages:
         assert result.max() <= 255
 
     def test_different_calls_produce_different_results(self):
-        aug = CardAugmentation(severity="medium")
+        aug = CardAugmentation(severity="medium", rng=np.random.RandomState(42))
         image = _make_card_image(224, 224, seed=10)
         result1 = aug(image)
-        result2 = aug(image)
+        aug2 = CardAugmentation(severity="medium", rng=np.random.RandomState(99))
+        result2 = aug2(image)
 
-        # Stochastic augmentation should usually produce different results
-        # (very unlikely to be identical with random transforms)
+        # Different RNG seeds should produce different augmented results
         assert not np.array_equal(result1, result2)
 
 

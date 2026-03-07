@@ -72,8 +72,6 @@ class CardAugmentation:
             result = self.apply_single(result, name)
         return result
 
-    _TRANSFORMS = ("glare", "blur", "rotation", "brightness", "foil", "perspective")
-
     def apply_single(self, image: np.ndarray, transform_name: str) -> np.ndarray:
         """Apply a single named transform."""
         transforms = {
