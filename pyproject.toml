@@ -17,6 +17,7 @@ dependencies = [
     "Pillow",
     "numpy",
     "imagehash",
+    "opencv-python-headless>=4.8",
 ]
 
 [project.optional-dependencies]

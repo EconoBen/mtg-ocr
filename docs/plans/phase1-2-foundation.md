@@ -263,13 +263,13 @@ Write tests first (TDD), then implement.
 
 Write tests first (TDD), then implement. This is T7 in the plan but can run in parallel with T6.
 
-- [ ] Write failing tests in `tests/unit/test_detection.py`:
+- [x] Write failing tests in `tests/unit/test_detection.py`:
   - Test card contour detection on a synthetic test image (white rectangle on dark background)
   - Test perspective correction produces upright rectangle
   - Test ScanMode enum (handheld, rig)
   - Test no card found returns None
   - Test multiple cards detected returns largest
-- [ ] Implement `src/mtg_ocr/detection/card_detector.py`:
+- [x] Implement `src/mtg_ocr/detection/card_detector.py`:
   ```python
   from enum import StrEnum
 
@@ -313,9 +313,9 @@ Write tests first (TDD), then implement. This is T7 in the plan but can run in p
       bounding_box: tuple[int, int, int, int]  # x, y, w, h in original image
       scan_mode: ScanMode
   ```
-- [ ] Create a synthetic test image in `tests/fixtures/` — a white rectangle (63x88 ratio) on dark background, for unit testing
-- [ ] Run: `uv run pytest tests/unit/test_detection.py -v` — all tests pass
-- [ ] Update bead: `bd update mtg_ocr-4g7 --status closed --json`
+- [x] Create a synthetic test image in `tests/fixtures/` — a white rectangle (63x88 ratio) on dark background, for unit testing
+- [x] Run: `uv run pytest tests/unit/test_detection.py -v` — all tests pass
+- [x] Update bead: `bd update mtg_ocr-4g7 --status closed --json`
 
 ### Task 7: Embedding Computation Script for RunPod (T6, bead mtg_ocr-llx)
 
