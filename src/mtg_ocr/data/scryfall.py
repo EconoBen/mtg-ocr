@@ -43,11 +43,19 @@ class ScryfallClient:
 
         time.sleep(RATE_LIMIT_SECONDS)
 
-        with httpx.stream("GET", url, timeout=120) as response:
-            response.raise_for_status()
-            with open(output_path, "wb") as f:
-                for chunk in response.iter_bytes():
-                    f.write(chunk)
+        # Write to temp file first, then rename atomically to avoid
+        # corrupt cache if download is interrupted
+        tmp_path = output_path.with_suffix(".tmp")
+        try:
+            with httpx.stream("GET", url, timeout=120) as response:
+                response.raise_for_status()
+                with open(tmp_path, "wb") as f:
+                    for chunk in response.iter_bytes():
+                        f.write(chunk)
+            tmp_path.rename(output_path)
+        except BaseException:
+            tmp_path.unlink(missing_ok=True)
+            raise
 
         return output_path
 

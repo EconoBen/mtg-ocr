@@ -86,6 +86,8 @@ class EmbeddingIndex:
         """Find top-K most similar cards by cosine similarity (dot product on normalized vectors)."""
         if self.embeddings is None or len(self.card_ids) == 0:
             return []
+        if top_k <= 0:
+            return []
 
         query = query.astype(np.float32).ravel()
         norm = np.linalg.norm(query)
