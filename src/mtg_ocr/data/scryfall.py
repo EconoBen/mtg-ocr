@@ -57,7 +57,7 @@ class ScryfallClient:
                     for chunk in response.iter_bytes():
                         f.write(chunk)
             tmp_path.rename(output_path)
-        except BaseException:
+        except Exception:
             tmp_path.unlink(missing_ok=True)
             raise
 

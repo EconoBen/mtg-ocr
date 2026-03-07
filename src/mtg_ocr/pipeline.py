@@ -106,7 +106,12 @@ class CardIdentificationPipeline:
 
     @staticmethod
     def _to_bgr(image: np.ndarray | Image.Image) -> np.ndarray:
-        """Convert input to BGR numpy array for OpenCV."""
+        """Convert input to BGR numpy array for OpenCV.
+
+        PIL Images are converted from RGB to BGR automatically.
+        numpy arrays are assumed to be BGR (OpenCV convention).
+        If passing np.array(pil_image), convert to BGR first or pass the PIL Image directly.
+        """
         if isinstance(image, Image.Image):
             rgb = np.array(image.convert("RGB"))
             return cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
