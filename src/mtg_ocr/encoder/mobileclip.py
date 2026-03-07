@@ -39,9 +39,14 @@ class MobileCLIPEncoder:
             out = self.model.encode_image(dummy)
         return out.shape[-1]
 
+    @property
+    def device(self) -> torch.device:
+        """Return the device the model is on."""
+        return next(self.model.parameters()).device
+
     def encode_image(self, image: Image.Image) -> np.ndarray:
         """Encode single image to normalized embedding vector."""
-        tensor = self.preprocess(image).unsqueeze(0)
+        tensor = self.preprocess(image).unsqueeze(0).to(self.device)
         with torch.no_grad():
             embedding = self.model.encode_image(tensor)
             embedding = embedding / embedding.norm(dim=-1, keepdim=True)
@@ -54,7 +59,7 @@ class MobileCLIPEncoder:
         all_embeddings: list[np.ndarray] = []
         for i in range(0, len(images), batch_size):
             batch = images[i : i + batch_size]
-            tensors = torch.stack([self.preprocess(img) for img in batch])
+            tensors = torch.stack([self.preprocess(img) for img in batch]).to(self.device)
             with torch.no_grad():
                 embeddings = self.model.encode_image(tensors)
                 embeddings = embeddings / embeddings.norm(dim=-1, keepdim=True)
