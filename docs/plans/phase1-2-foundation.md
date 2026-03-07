@@ -419,11 +419,11 @@ Write tests first (TDD), then implement. This wires everything together.
 
 Write the augmentation pipeline and training data preparation. This creates the infrastructure for Phase 3 fine-tuning.
 
-- [ ] Write failing tests in `tests/unit/test_training.py`:
+- [x] Write failing tests in `tests/unit/test_training.py`:
   - Test augmentation pipeline produces valid images
   - Test triplet generation (anchor, positive, negative)
   - Test augmentation includes glare, blur, angle, foil simulation
-- [ ] Implement `src/mtg_ocr/training/augmentation.py`:
+- [x] Implement `src/mtg_ocr/training/augmentation.py`:
   ```python
   class CardAugmentation:
       """Image augmentation pipeline for training data.
@@ -440,7 +440,7 @@ Write the augmentation pipeline and training data preparation. This creates the 
           """Apply random augmentation to a card image."""
           ...
   ```
-- [ ] Implement `src/mtg_ocr/training/dataset.py`:
+- [x] Implement `src/mtg_ocr/training/dataset.py`:
   ```python
   class CardTripletDataset:
       """Generate training triplets for contrastive learning.
@@ -452,9 +452,9 @@ Write the augmentation pipeline and training data preparation. This creates the 
       """
       ...
   ```
-- [ ] Create `scripts/prepare_training_data.py` — downloads images, generates augmented triplets
-- [ ] Run: `uv run pytest tests/unit/test_training.py -v` — all tests pass
-- [ ] Update bead: `bd update mtg_ocr-qwk --status closed --json`
+- [x] Create `scripts/prepare_training_data.py` — downloads images, generates augmented triplets
+- [x] Run: `uv run pytest tests/unit/test_training.py -v` — all tests pass
+- [x] Update bead: `bd update mtg_ocr-qwk --status closed --json`
 
 ### Task 10: Final Validation & PR
 
