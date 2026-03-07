@@ -167,14 +167,14 @@ Write tests first (TDD), then implement.
 
 Write tests first (TDD), then implement.
 
-- [ ] Write failing tests in `tests/unit/test_search.py`:
+- [x] Write failing tests in `tests/unit/test_search.py`:
   - Test loading embeddings from file
   - Test dot product search returns correct top-K
   - Test FP16 quantization roundtrip
   - Test search with normalized vectors (cosine similarity)
   - Test empty database handling
   - Test search latency under 10ms for 30K embeddings (synthetic data)
-- [ ] Implement `src/mtg_ocr/search/similarity.py`:
+- [x] Implement `src/mtg_ocr/search/similarity.py`:
   ```python
   class EmbeddingIndex:
       """Exact nearest-neighbor search via dot product.
@@ -210,8 +210,8 @@ Write tests first (TDD), then implement.
           """Build index from pre-computed arrays."""
           ...
   ```
-- [ ] Run: `uv run pytest tests/unit/test_search.py -v` — all tests pass
-- [ ] Update bead: `bd update mtg_ocr-z27 --status closed --json`
+- [x] Run: `uv run pytest tests/unit/test_search.py -v` — all tests pass
+- [x] Update bead: `bd update mtg_ocr-z27 --status closed --json`
 
 ### Task 5: Benchmarking Framework (T5, bead mtg_ocr-xrp)
 
