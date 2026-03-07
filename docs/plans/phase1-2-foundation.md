@@ -369,13 +369,13 @@ Write the script and infrastructure for computing embeddings on RunPod GPU. The 
 
 Write tests first (TDD), then implement. This wires everything together.
 
-- [ ] Write failing tests in `tests/unit/test_pipeline.py`:
+- [x] Write failing tests in `tests/unit/test_pipeline.py`:
   - Test pipeline initialization with all components
   - Test identify() with a mock encoder and pre-built index
   - Test identify() returns CardMatch list sorted by confidence
   - Test identify_batch() for rig mode
   - Test pipeline handles "no card detected" gracefully
-- [ ] Implement `src/mtg_ocr/pipeline.py`:
+- [x] Implement `src/mtg_ocr/pipeline.py`:
   ```python
   class CardIdentificationPipeline:
       """End-to-end card identification pipeline.
@@ -410,10 +410,10 @@ Write tests first (TDD), then implement. This wires everything together.
           """Load pipeline from a directory containing model + embeddings."""
           ...
   ```
-- [ ] Run: `uv run pytest tests/unit/test_pipeline.py -v` — all tests pass
-- [ ] Run: `uv run pytest tests/ -q` — ALL tests pass (full suite regression)
-- [ ] Run: `uv run ruff check src/ tests/` — no lint errors
-- [ ] Update bead: `bd update mtg_ocr-bhe --status closed --json`
+- [x] Run: `uv run pytest tests/unit/test_pipeline.py -v` — all tests pass
+- [x] Run: `uv run pytest tests/ -q` — ALL tests pass (full suite regression)
+- [x] Run: `uv run ruff check src/ tests/` — no lint errors
+- [x] Update bead: `bd update mtg_ocr-bhe --status closed --json`
 
 ### Task 9: Training Data Preparation Script (T11, bead mtg_ocr-qwk)
 
