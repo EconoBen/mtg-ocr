@@ -143,7 +143,7 @@ class EmbeddingBuilder:
         if keep_indices:
             filtered_emb = new_embeddings[keep_indices]
             filtered_ids = [new_card_ids[i] for i in keep_indices]
-            filtered_meta = {cid: new_metadata[cid] for cid in filtered_ids}
+            filtered_meta = {cid: new_metadata[cid] for cid in filtered_ids if cid in new_metadata}
 
             merged_emb = np.concatenate(
                 [old_emb.astype(np.float32), filtered_emb.astype(np.float32)], axis=0
