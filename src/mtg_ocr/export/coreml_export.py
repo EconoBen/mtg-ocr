@@ -141,8 +141,8 @@ class CoreMLExporter:
         session = ort.InferenceSession(str(onnx_path))
         input_info = session.get_inputs()[0]
         output_info = session.get_outputs()[0]
-        input_shape = tuple(input_info.shape)
-        output_shape = tuple(output_info.shape)
+        input_shape = tuple(s if isinstance(s, int) else 1 for s in input_info.shape)
+        output_shape = tuple(s if isinstance(s, int) else 1 for s in output_info.shape)
 
         model_size_mb = self._get_size_mb(output_path)
 

@@ -164,16 +164,14 @@ class ONNXExporter:
 
         # Get ONNX output
         preprocess = self._get_preprocess()
-        if preprocess is not None:
-            input_tensor = (
-                preprocess(test_image).unsqueeze(0).detach().cpu().numpy()
+        if preprocess is None:
+            raise AttributeError(
+                "Encoder does not expose a 'preprocess' attribute. "
+                "Cannot validate without matching preprocessing."
             )
-        else:
-            # Fallback: resize and normalize manually
-            img_resized = test_image.resize((224, 224))
-            arr = np.array(img_resized, dtype=np.float32) / 255.0
-            arr = arr.transpose(2, 0, 1)  # HWC -> CHW
-            input_tensor = np.expand_dims(arr, axis=0)
+        input_tensor = (
+            preprocess(test_image).unsqueeze(0).detach().cpu().numpy()
+        )
 
         session = ort.InferenceSession(str(onnx_path))
         onnx_output = session.run(None, {"input": input_tensor})[0]
