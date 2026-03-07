@@ -321,12 +321,12 @@ Write tests first (TDD), then implement. This is T7 in the plan but can run in p
 
 Write the script and infrastructure for computing embeddings on RunPod GPU. The actual RunPod execution is manual.
 
-- [ ] Write failing tests in `tests/unit/test_embeddings.py`:
+- [x] Write failing tests in `tests/unit/test_embeddings.py`:
   - Test EmbeddingBuilder processes a batch of images
   - Test embeddings are normalized (unit length)
   - Test save/load roundtrip with FP16 quantization
   - Test incremental update (add new cards to existing database)
-- [ ] Implement `src/mtg_ocr/embeddings/builder.py`:
+- [x] Implement `src/mtg_ocr/embeddings/builder.py`:
   ```python
   class EmbeddingBuilder:
       """Build card embedding database from Scryfall images.
@@ -351,7 +351,7 @@ Write the script and infrastructure for computing embeddings on RunPod GPU. The 
           """Incrementally update embeddings with new cards only."""
           ...
   ```
-- [ ] Create `scripts/compute_embeddings.py` — standalone RunPod script:
+- [x] Create `scripts/compute_embeddings.py` — standalone RunPod script:
   ```python
   """Compute card embeddings on RunPod GPU.
 
@@ -362,8 +362,8 @@ Write the script and infrastructure for computing embeddings on RunPod GPU. The 
   Estimated time: ~15-30 min on A40, cost ~$1-2.
   """
   ```
-- [ ] Run: `uv run pytest tests/unit/test_embeddings.py -v` — all tests pass
-- [ ] Update bead: `bd update mtg_ocr-llx --status closed --json`
+- [x] Run: `uv run pytest tests/unit/test_embeddings.py -v` — all tests pass
+- [x] Update bead: `bd update mtg_ocr-llx --status closed --json`
 
 ### Task 8: End-to-End Pipeline (T8, bead mtg_ocr-bhe)
 
