@@ -11,7 +11,6 @@ Estimated time: ~15-30 min on A40, cost ~$1-2.
 from __future__ import annotations
 
 import argparse
-import asyncio
 import sys
 from pathlib import Path
 
@@ -47,7 +46,7 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-async def main() -> None:
+def main() -> None:
     args = parse_args()
 
     from mtg_ocr.data.scryfall import ScryfallClient
@@ -63,13 +62,13 @@ async def main() -> None:
 
     if args.update:
         print(f"Incremental update from {args.update}")
-        stats = await builder.update(
+        stats = builder.update(
             existing_path=args.update,
             output_path=args.output,
         )
     else:
         print("Building full embedding database...")
-        stats = await builder.build(
+        stats = builder.build(
             output_path=args.output,
             batch_size=args.batch_size,
         )
@@ -84,4 +83,4 @@ async def main() -> None:
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()

@@ -154,7 +154,7 @@ class EmbeddingBuilder:
             file_size_mb=round(file_size_mb, 2),
         )
 
-    async def build(
+    def build(
         self, output_path: Path, batch_size: int = 64
     ) -> EmbeddingStats:
         """Build complete embedding database.
@@ -164,6 +164,12 @@ class EmbeddingBuilder:
         3. Encode in batches
         4. Save as FP16 .npz
         """
+        from io import BytesIO
+
+        import httpx
+
+        from mtg_ocr.data.scryfall import RATE_LIMIT_SECONDS
+
         bulk_path = self.scryfall_client.download_bulk_data()
         cards = self.scryfall_client.build_card_dictionary(bulk_path)
         image_uris = self.scryfall_client.get_image_uris(cards)
@@ -177,13 +183,11 @@ class EmbeddingBuilder:
             batch_ids = []
             for scryfall_id, uri in batch:
                 try:
-                    import httpx
                     import time
 
-                    time.sleep(0.075)
+                    time.sleep(RATE_LIMIT_SECONDS)
                     resp = httpx.get(uri, timeout=30)
                     resp.raise_for_status()
-                    from io import BytesIO
 
                     img = Image.open(BytesIO(resp.content)).convert("RGB")
                     images.append(img)
@@ -223,10 +227,16 @@ class EmbeddingBuilder:
             file_size_mb=round(file_size_mb, 2),
         )
 
-    async def update(
+    def update(
         self, existing_path: Path, output_path: Path
     ) -> EmbeddingStats:
         """Incrementally update embeddings with new cards only."""
+        from io import BytesIO
+
+        import httpx
+
+        from mtg_ocr.data.scryfall import RATE_LIMIT_SECONDS
+
         _, existing_ids, _ = self.load_embeddings(existing_path)
         existing_set = set(existing_ids)
 
@@ -244,13 +254,11 @@ class EmbeddingBuilder:
 
         for scryfall_id, uri in new_uris:
             try:
-                import httpx
                 import time
 
-                time.sleep(0.075)
+                time.sleep(RATE_LIMIT_SECONDS)
                 resp = httpx.get(uri, timeout=30)
                 resp.raise_for_status()
-                from io import BytesIO
 
                 img = Image.open(BytesIO(resp.content)).convert("RGB")
                 emb = self.encode_batch([img])

@@ -49,6 +49,8 @@ class MobileCLIPEncoder:
 
     def encode_images(self, images: list[Image.Image], batch_size: int = 32) -> np.ndarray:
         """Batch encode images. Returns (N, embedding_dim) array of normalized embeddings."""
+        if not images:
+            return np.empty((0, self.embedding_dim), dtype=np.float32)
         all_embeddings: list[np.ndarray] = []
         for i in range(0, len(images), batch_size):
             batch = images[i : i + batch_size]

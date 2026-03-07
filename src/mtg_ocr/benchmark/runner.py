@@ -77,28 +77,28 @@ class BenchmarkRunner:
             gt = self.ground_truth[filename]
             expected_id = gt["scryfall_id"]
 
-            img = Image.open(self.corpus_dir / filename)
-            img.info["scryfall_id"] = expected_id
+            with Image.open(self.corpus_dir / filename) as img:
+                img.info["scryfall_id"] = expected_id
 
-            start = time.perf_counter()
-            result = self.pipeline.identify(img, top_k=5)
-            elapsed_ms = (time.perf_counter() - start) * 1000
-            latencies.append(elapsed_ms)
+                start = time.perf_counter()
+                result = self.pipeline.identify(img, top_k=5)
+                elapsed_ms = (time.perf_counter() - start) * 1000
+                latencies.append(elapsed_ms)
 
-            top_ids = [m.scryfall_id for m in result.matches]
+                top_ids = [m.scryfall_id for m in result.matches]
 
-            if top_ids and top_ids[0] == expected_id:
-                correct_top_1 += 1
+                if top_ids and top_ids[0] == expected_id:
+                    correct_top_1 += 1
 
-            if expected_id in top_ids:
-                correct_top_5 += 1
-            else:
-                failures.append({
-                    "image_path": filename,
-                    "expected": expected_id,
-                    "predicted": top_ids[0] if top_ids else None,
-                    "confidence": result.matches[0].confidence if result.matches else 0.0,
-                })
+                if expected_id in top_ids:
+                    correct_top_5 += 1
+                else:
+                    failures.append({
+                        "image_path": filename,
+                        "expected": expected_id,
+                        "predicted": top_ids[0] if top_ids else None,
+                        "confidence": result.matches[0].confidence if result.matches else 0.0,
+                    })
 
         total = self.total_images
         latency_arr = np.array(latencies) if latencies else np.array([0.0])
@@ -122,15 +122,17 @@ class BenchmarkRunner:
         # Use first image for repeated latency measurement
         filename = self._image_files[0]
         gt = self.ground_truth[filename]
-        img = Image.open(self.corpus_dir / filename)
-        img.info["scryfall_id"] = gt["scryfall_id"]
+        with Image.open(self.corpus_dir / filename) as img:
+            img.info["scryfall_id"] = gt["scryfall_id"]
+            # Load image data before entering measurement loop
+            img.load()
 
-        latencies: list[float] = []
-        for _ in range(n_iterations):
-            start = time.perf_counter()
-            self.pipeline.identify(img, top_k=5)
-            elapsed_ms = (time.perf_counter() - start) * 1000
-            latencies.append(elapsed_ms)
+            latencies: list[float] = []
+            for _ in range(n_iterations):
+                start = time.perf_counter()
+                self.pipeline.identify(img, top_k=5)
+                elapsed_ms = (time.perf_counter() - start) * 1000
+                latencies.append(elapsed_ms)
 
         latency_arr = np.array(latencies)
         return {

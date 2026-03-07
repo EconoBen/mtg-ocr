@@ -24,13 +24,27 @@ class EmbeddingIndex:
         self.metadata: dict[str, CardInfo] = {}
 
     def load(self, path: Path) -> None:
-        """Load pre-computed embeddings from .npz file."""
+        """Load pre-computed embeddings from .npz file.
+
+        Note: This loads only embeddings and card_ids. Metadata must be loaded
+        separately via load_metadata() or by using EmbeddingBuilder.load_embeddings()
+        which handles both the .npz and .meta.json sidecar files.
+        """
+        import json
+
         path = Path(path)
         if not path.exists():
             raise FileNotFoundError(f"Embedding file not found: {path}")
         data = np.load(path, allow_pickle=False)
         self.embeddings = data["embeddings"].astype(np.float16)
         self.card_ids = [s for s in data["card_ids"]]
+
+        # Attempt to load metadata sidecar if it exists
+        meta_path = path.with_suffix("").with_suffix(".meta.json")
+        if meta_path.exists():
+            raw = json.loads(meta_path.read_text())
+            for cid, info_dict in raw.items():
+                self.metadata[cid] = CardInfo(**info_dict)
 
     def save(self, path: Path) -> None:
         """Save embeddings to .npz file with FP16 quantization."""
