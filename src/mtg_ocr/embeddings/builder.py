@@ -77,6 +77,10 @@ class EmbeddingBuilder:
         output_path: Path,
     ) -> None:
         """Save embeddings to .npz file with FP16 quantization and metadata JSON."""
+        if embeddings.shape[0] != len(card_ids):
+            raise ValueError(
+                f"Embeddings rows ({embeddings.shape[0]}) != card_ids length ({len(card_ids)})"
+            )
         output_path = _ensure_npz_suffix(Path(output_path))
         output_path.parent.mkdir(parents=True, exist_ok=True)
 

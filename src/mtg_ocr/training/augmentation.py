@@ -72,17 +72,23 @@ class CardAugmentation:
             result = self.apply_single(result, name)
         return result
 
+    _TRANSFORMS = ("glare", "blur", "rotation", "brightness", "foil", "perspective")
+
     def apply_single(self, image: np.ndarray, transform_name: str) -> np.ndarray:
         """Apply a single named transform."""
-        fn = {
+        transforms = {
             "glare": self._apply_glare,
             "blur": self._apply_blur,
             "rotation": self._apply_rotation,
             "brightness": self._apply_brightness,
             "foil": self._apply_foil,
             "perspective": self._apply_perspective,
-        }[transform_name]
-        return fn(image)
+        }
+        if transform_name not in transforms:
+            raise ValueError(
+                f"Unknown transform '{transform_name}'. Valid: {self._TRANSFORMS}"
+            )
+        return transforms[transform_name](image)
 
     def _apply_glare(self, image: np.ndarray) -> np.ndarray:
         """Simulate light glare as a bright elliptical spot."""
@@ -163,7 +169,7 @@ class CardAugmentation:
 
         # Random corner offsets
         offsets = self._rng.uniform(-warp, warp, (4, 2)).astype(np.float32)
-        src = np.array([[0, 0], [w, 0], [w, h], [0, h]], dtype=np.float32)
+        src = np.array([[0, 0], [w - 1, 0], [w - 1, h - 1], [0, h - 1]], dtype=np.float32)
         dst = src + offsets * np.array([w, h], dtype=np.float32)
 
         matrix = cv2.getPerspectiveTransform(src, dst)
