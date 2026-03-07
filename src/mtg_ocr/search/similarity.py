@@ -51,7 +51,7 @@ class EmbeddingIndex:
         data = np.load(path, allow_pickle=False)
         self.embeddings = data["embeddings"].astype(np.float16)
         self._embeddings_f32 = None  # invalidate cache
-        self.card_ids = [s for s in data["card_ids"]]
+        self.card_ids = [str(s) for s in data["card_ids"]]
         self.metadata = {}  # clear stale metadata before loading
 
         # Attempt to load metadata sidecar if it exists

@@ -111,7 +111,7 @@ class EmbeddingBuilder:
         path = _ensure_npz_suffix(Path(path))
         data = np.load(path, allow_pickle=False)
         embeddings = data["embeddings"]
-        card_ids = [s for s in data["card_ids"]]
+        card_ids = [str(s) for s in data["card_ids"]]
 
         meta_path = _meta_path(path)
         metadata: dict[str, CardInfo] = {}

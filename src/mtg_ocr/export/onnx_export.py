@@ -118,12 +118,14 @@ class ONNXExporter:
         if quantize:
             from onnxruntime.quantization import QuantType, quantize_dynamic
 
-            quantize_dynamic(
-                str(raw_path),
-                str(output_path),
-                weight_type=QuantType.QInt8,
-            )
-            raw_path.unlink()
+            try:
+                quantize_dynamic(
+                    str(raw_path),
+                    str(output_path),
+                    weight_type=QuantType.QInt8,
+                )
+            finally:
+                raw_path.unlink(missing_ok=True)
 
         # Get output shape by running the model
         with torch.no_grad():
