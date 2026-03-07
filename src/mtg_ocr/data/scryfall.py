@@ -76,7 +76,7 @@ class ScryfallClient:
                 with open(tmp_path, "wb") as f:
                     for chunk in response.iter_bytes():
                         f.write(chunk)
-            tmp_path.rename(output_path)
+            os.replace(tmp_path, output_path)
         except Exception:
             tmp_path.unlink(missing_ok=True)
             raise

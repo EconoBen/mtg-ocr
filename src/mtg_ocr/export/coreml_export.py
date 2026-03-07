@@ -8,7 +8,7 @@ from pathlib import Path
 import torch
 
 from mtg_ocr.encoder.base import VisualEncoder
-from mtg_ocr.export.onnx_export import _ImageEncoderWrapper
+from mtg_ocr.export.onnx_export import ImageEncoderWrapper
 
 
 @dataclass
@@ -60,7 +60,7 @@ class CoreMLExporter:
         model.eval()
 
         if hasattr(model, "encode_image"):
-            wrapper = _ImageEncoderWrapper(model)
+            wrapper = ImageEncoderWrapper(model)
         else:
             wrapper = model
         wrapper.eval()

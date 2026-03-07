@@ -169,7 +169,7 @@ def update(existing, output, cache_dir) -> None:
 @embeddings.command()
 @click.option("--input", "input_path", type=click.Path(exists=True, path_type=Path), required=True, help="Input embeddings .npz file.")
 @click.option("--output", type=click.Path(path_type=Path), required=True, help="Output path for reduced embeddings.")
-@click.option("--dim", type=int, required=True, help="Target embedding dimension.")
+@click.option("--dim", type=click.IntRange(min=1), required=True, help="Target embedding dimension.")
 @click.option("--method", type=click.Choice(["pca", "truncation"]), default="pca", show_default=True, help="Reduction method.")
 def reduce(input_path, output, dim, method) -> None:
     """Reduce embedding dimensions (e.g. 512 -> 256)."""
@@ -194,6 +194,12 @@ def reduce(input_path, output, dim, method) -> None:
     if "card_ids" in data:
         save_dict["card_ids"] = data["card_ids"]
     np.savez(output, **save_dict)
+
+    # Save the fitted reducer so it can be applied to query embeddings at inference time
+    if method == "pca":
+        reducer_path = output.with_suffix(".reducer.npz")
+        reducer.save(reducer_path)
+        click.echo(f"Reducer saved to {reducer_path}")
 
     click.echo(f"Reduced {report.original_dim}D -> {report.target_dim}D ({report.method})")
     click.echo(f"Variance retained: {report.variance_retained:.2%}")

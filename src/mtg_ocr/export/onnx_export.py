@@ -83,7 +83,7 @@ class ONNXExporter:
         # Export to ONNX — use the image encoder specifically
         if hasattr(model, "encode_image"):
             # Wrap encode_image as a forward-only module for tracing
-            wrapper = _ImageEncoderWrapper(model)
+            wrapper = ImageEncoderWrapper(model)
         else:
             wrapper = model
 
@@ -183,7 +183,7 @@ class ONNXExporter:
         return bool(np.allclose(pytorch_output, onnx_embedding, rtol=rtol, atol=1e-5))
 
 
-class _ImageEncoderWrapper(torch.nn.Module):
+class ImageEncoderWrapper(torch.nn.Module):
     """Wraps a model's encode_image method as a standard forward pass."""
 
     def __init__(self, model: torch.nn.Module) -> None:

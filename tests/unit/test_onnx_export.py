@@ -9,7 +9,7 @@ import pytest
 import torch
 from PIL import Image
 
-from mtg_ocr.export.onnx_export import ExportResult, ONNXExporter, _ImageEncoderWrapper
+from mtg_ocr.export.onnx_export import ExportResult, ONNXExporter, ImageEncoderWrapper
 
 
 # ---------------------------------------------------------------------------
@@ -190,14 +190,14 @@ class TestONNXExporter:
 
 
 # ---------------------------------------------------------------------------
-# Tests: _ImageEncoderWrapper
+# Tests: ImageEncoderWrapper
 # ---------------------------------------------------------------------------
 
 
 class TestImageEncoderWrapper:
     def test_forward_calls_encode_image(self):
         model = _FakeTorchModel(embedding_dim=8)
-        wrapper = _ImageEncoderWrapper(model)
+        wrapper = ImageEncoderWrapper(model)
 
         x = torch.randn(2, 3, 224, 224)
         out = wrapper(x)
@@ -206,5 +206,5 @@ class TestImageEncoderWrapper:
 
     def test_wrapper_is_torch_module(self):
         model = _FakeTorchModel()
-        wrapper = _ImageEncoderWrapper(model)
+        wrapper = ImageEncoderWrapper(model)
         assert isinstance(wrapper, torch.nn.Module)
