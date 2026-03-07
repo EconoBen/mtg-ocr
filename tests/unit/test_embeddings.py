@@ -22,17 +22,21 @@ def _make_card_info(scryfall_id: str, name: str = "Test Card") -> CardInfo:
 
 
 class FakeEncoder:
-    """Fake encoder that returns deterministic embeddings."""
+    """Fake encoder that returns deterministic embeddings varying by input."""
 
     def __init__(self, dim: int = 512):
         self._dim = dim
+        self._call_count = 0
 
     @property
     def embedding_dim(self) -> int:
         return self._dim
 
     def encode_image(self, image):
-        rng = np.random.RandomState(42)
+        # Use call count as seed so each image gets a different embedding
+        seed = 42 + self._call_count
+        self._call_count += 1
+        rng = np.random.RandomState(seed)
         vec = rng.randn(self._dim).astype(np.float32)
         vec /= np.linalg.norm(vec)
         return vec

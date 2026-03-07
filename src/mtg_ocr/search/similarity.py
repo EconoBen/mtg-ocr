@@ -10,6 +10,18 @@ from mtg_ocr.data.models import CardInfo
 from mtg_ocr.models.card import CardMatch
 
 
+def _ensure_npz_suffix(path: Path) -> Path:
+    """Ensure path ends with .npz (np.savez auto-appends it otherwise)."""
+    if not str(path).endswith(".npz"):
+        return Path(str(path) + ".npz")
+    return path
+
+
+def _meta_path(npz_path: Path) -> Path:
+    """Derive the metadata sidecar path from an .npz path."""
+    return Path(str(npz_path).removesuffix(".npz") + ".meta.json")
+
+
 class EmbeddingIndex:
     """Exact nearest-neighbor search via dot product.
 
@@ -32,7 +44,7 @@ class EmbeddingIndex:
         """
         import json
 
-        path = Path(path)
+        path = _ensure_npz_suffix(Path(path))
         if not path.exists():
             raise FileNotFoundError(f"Embedding file not found: {path}")
         data = np.load(path, allow_pickle=False)
@@ -40,7 +52,7 @@ class EmbeddingIndex:
         self.card_ids = [s for s in data["card_ids"]]
 
         # Attempt to load metadata sidecar if it exists
-        meta_path = path.with_suffix("").with_suffix(".meta.json")
+        meta_path = _meta_path(path)
         if meta_path.exists():
             raw = json.loads(meta_path.read_text())
             for cid, info_dict in raw.items():
@@ -50,7 +62,7 @@ class EmbeddingIndex:
         """Save embeddings to .npz file with FP16 quantization."""
         if self.embeddings is None:
             raise ValueError("No embeddings to save")
-        path = Path(path)
+        path = _ensure_npz_suffix(Path(path))
         path.parent.mkdir(parents=True, exist_ok=True)
         np.savez(
             path,
@@ -76,6 +88,9 @@ class EmbeddingIndex:
             return []
 
         query = query.astype(np.float32).ravel()
+        norm = np.linalg.norm(query)
+        if norm > 1e-8:
+            query = query / norm
         emb = self.embeddings.astype(np.float32)
 
         scores = emb @ query  # (N,)

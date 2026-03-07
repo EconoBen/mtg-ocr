@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import time
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -245,17 +244,17 @@ class TestRateLimiting:
             mock_resp.__exit__ = MagicMock(return_value=False)
             return mock_resp
 
-        call_times = []
+        sleep_calls = []
 
-        def tracking_get(*args, **kwargs):
-            call_times.append(time.monotonic())
-            return bulk_url_response
-
-        with patch("httpx.get", side_effect=tracking_get):
+        with patch("httpx.get", return_value=bulk_url_response):
             with patch("httpx.stream", side_effect=mock_stream_context):
-                path = client.download_bulk_data(data_type="default_cards")
+                with patch("mtg_ocr.data.scryfall.time.sleep", side_effect=lambda s: sleep_calls.append(s)):
+                    path = client.download_bulk_data(data_type="default_cards")
 
         assert path.exists()
+        # Verify rate limit sleep was called with correct value
+        assert len(sleep_calls) >= 1
+        assert all(s == 0.075 for s in sleep_calls)
 
     def test_client_has_rate_limit_configured(self, client):
         from mtg_ocr.data.scryfall import RATE_LIMIT_SECONDS

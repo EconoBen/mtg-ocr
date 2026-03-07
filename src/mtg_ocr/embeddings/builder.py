@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import logging
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -11,6 +12,20 @@ from PIL import Image
 
 from mtg_ocr.data.models import CardInfo
 from mtg_ocr.encoder.base import VisualEncoder
+
+logger = logging.getLogger(__name__)
+
+
+def _ensure_npz_suffix(path: Path) -> Path:
+    """Ensure path ends with .npz (np.savez auto-appends it otherwise)."""
+    if not str(path).endswith(".npz"):
+        return Path(str(path) + ".npz")
+    return path
+
+
+def _meta_path(npz_path: Path) -> Path:
+    """Derive the metadata sidecar path from an .npz path."""
+    return Path(str(npz_path).removesuffix(".npz") + ".meta.json")
 
 
 @dataclass
@@ -62,7 +77,7 @@ class EmbeddingBuilder:
         output_path: Path,
     ) -> None:
         """Save embeddings to .npz file with FP16 quantization and metadata JSON."""
-        output_path = Path(output_path)
+        output_path = _ensure_npz_suffix(Path(output_path))
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
         np.savez(
@@ -72,7 +87,7 @@ class EmbeddingBuilder:
         )
 
         # Save metadata as JSON sidecar
-        meta_path = output_path.with_suffix(".meta.json")
+        meta_path = _meta_path(output_path)
         meta_dict = {}
         for cid, info in metadata.items():
             meta_dict[cid] = {
@@ -89,12 +104,12 @@ class EmbeddingBuilder:
         self, path: Path
     ) -> tuple[np.ndarray, list[str], dict[str, CardInfo]]:
         """Load embeddings from .npz file and metadata from JSON sidecar."""
-        path = Path(path)
+        path = _ensure_npz_suffix(Path(path))
         data = np.load(path, allow_pickle=False)
         embeddings = data["embeddings"]
         card_ids = [s for s in data["card_ids"]]
 
-        meta_path = path.with_suffix("").with_suffix(".meta.json")
+        meta_path = _meta_path(path)
         metadata: dict[str, CardInfo] = {}
         if meta_path.exists():
             raw = json.loads(meta_path.read_text())
@@ -143,8 +158,8 @@ class EmbeddingBuilder:
             output_path=output_path,
         )
 
-        output_path = Path(output_path)
-        file_size_mb = output_path.stat().st_size / (1024 * 1024)
+        actual_path = _ensure_npz_suffix(Path(output_path))
+        file_size_mb = actual_path.stat().st_size / (1024 * 1024)
 
         return EmbeddingStats(
             total_cards=len(merged_ids),
@@ -164,6 +179,7 @@ class EmbeddingBuilder:
         3. Encode in batches
         4. Save as FP16 .npz
         """
+        import time
         from io import BytesIO
 
         import httpx
@@ -183,8 +199,6 @@ class EmbeddingBuilder:
             batch_ids = []
             for scryfall_id, uri in batch:
                 try:
-                    import time
-
                     time.sleep(RATE_LIMIT_SECONDS)
                     resp = httpx.get(uri, timeout=30)
                     resp.raise_for_status()
@@ -192,7 +206,8 @@ class EmbeddingBuilder:
                     img = Image.open(BytesIO(resp.content)).convert("RGB")
                     images.append(img)
                     batch_ids.append(scryfall_id)
-                except Exception:
+                except (httpx.HTTPError, OSError) as exc:
+                    logger.warning("Failed to download/process card %s: %s", scryfall_id, exc)
                     continue
 
             if images:
@@ -214,10 +229,8 @@ class EmbeddingBuilder:
             output_path=output_path,
         )
 
-        output_path = Path(output_path)
-        file_size_mb = (
-            output_path.stat().st_size / (1024 * 1024) if output_path.exists() else 0.0
-        )
+        actual_path = _ensure_npz_suffix(Path(output_path))
+        file_size_mb = actual_path.stat().st_size / (1024 * 1024)
 
         return EmbeddingStats(
             total_cards=len(all_ids),
@@ -231,6 +244,8 @@ class EmbeddingBuilder:
         self, existing_path: Path, output_path: Path
     ) -> EmbeddingStats:
         """Incrementally update embeddings with new cards only."""
+        import shutil
+        import time
         from io import BytesIO
 
         import httpx
@@ -254,8 +269,6 @@ class EmbeddingBuilder:
 
         for scryfall_id, uri in new_uris:
             try:
-                import time
-
                 time.sleep(RATE_LIMIT_SECONDS)
                 resp = httpx.get(uri, timeout=30)
                 resp.raise_for_status()
@@ -264,7 +277,8 @@ class EmbeddingBuilder:
                 emb = self.encode_batch([img])
                 new_embeddings_list.append(emb)
                 new_ids.append(scryfall_id)
-            except Exception:
+            except (httpx.HTTPError, OSError) as exc:
+                logger.warning("Failed to download/process card %s: %s", scryfall_id, exc)
                 continue
 
         if new_embeddings_list:
@@ -279,12 +293,12 @@ class EmbeddingBuilder:
             )
 
         # No new cards — just copy existing
-        import shutil
-
-        shutil.copy2(existing_path, output_path)
-        meta_src = existing_path.with_suffix("").with_suffix(".meta.json")
+        existing_npz = _ensure_npz_suffix(Path(existing_path))
+        output_npz = _ensure_npz_suffix(Path(output_path))
+        shutil.copy2(existing_npz, output_npz)
+        meta_src = _meta_path(existing_npz)
         if meta_src.exists():
-            shutil.copy2(meta_src, output_path.with_suffix("").with_suffix(".meta.json"))
+            shutil.copy2(meta_src, _meta_path(output_npz))
 
         return EmbeddingStats(
             total_cards=len(existing_ids),
@@ -292,6 +306,6 @@ class EmbeddingBuilder:
             skipped_cards=0,
             embedding_dim=self.encoder.embedding_dim,
             file_size_mb=round(
-                existing_path.stat().st_size / (1024 * 1024), 2
+                existing_npz.stat().st_size / (1024 * 1024), 2
             ),
         )

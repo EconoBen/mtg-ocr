@@ -61,22 +61,14 @@ def parse_args() -> argparse.Namespace:
 def load_card_images(image_dir: Path) -> dict[str, list[np.ndarray]]:
     """Load card images from directory, grouped by card ID."""
     card_images: dict[str, list[np.ndarray]] = {}
-    for img_path in sorted(image_dir.glob("*.jpg")):
-        card_id = img_path.stem
-        img = Image.open(img_path).convert("RGB")
-        img_array = np.array(img)
-        if card_id not in card_images:
-            card_images[card_id] = []
-        card_images[card_id].append(img_array)
-
-    # Also check PNG files
-    for img_path in sorted(image_dir.glob("*.png")):
-        card_id = img_path.stem
-        img = Image.open(img_path).convert("RGB")
-        img_array = np.array(img)
-        if card_id not in card_images:
-            card_images[card_id] = []
-        card_images[card_id].append(img_array)
+    for ext in ("*.jpg", "*.png"):
+        for img_path in sorted(image_dir.glob(ext)):
+            card_id = img_path.stem
+            with Image.open(img_path) as img:
+                img_array = np.array(img.convert("RGB"))
+            if card_id not in card_images:
+                card_images[card_id] = []
+            card_images[card_id].append(img_array)
 
     return card_images
 

@@ -19,14 +19,20 @@ EMBEDDING_DIM = 512
 
 
 class MockEncoder:
-    """A mock visual encoder that returns deterministic embeddings."""
+    """A mock visual encoder that returns deterministic embeddings varying by input."""
+
+    def __init__(self) -> None:
+        self._call_count = 0
 
     @property
     def embedding_dim(self) -> int:
         return EMBEDDING_DIM
 
     def encode_image(self, image: Image.Image) -> np.ndarray:
-        rng = np.random.default_rng(42)
+        # Use call count as seed so each image gets a different embedding
+        seed = 42 + self._call_count
+        self._call_count += 1
+        rng = np.random.default_rng(seed)
         vec = rng.standard_normal(EMBEDDING_DIM).astype(np.float32)
         return vec / np.linalg.norm(vec)
 

@@ -11,7 +11,6 @@ Estimated time: ~15-30 min on A40, cost ~$1-2.
 from __future__ import annotations
 
 import argparse
-import sys
 from pathlib import Path
 
 
@@ -73,7 +72,7 @@ def main() -> None:
             batch_size=args.batch_size,
         )
 
-    print(f"Done! Stats:")
+    print("Done! Stats:")
     print(f"  Total cards: {stats.total_cards}")
     print(f"  New cards:   {stats.new_cards}")
     print(f"  Skipped:     {stats.skipped_cards}")

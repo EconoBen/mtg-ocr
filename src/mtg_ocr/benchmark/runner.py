@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import dataclasses
 import json
 import time
 from dataclasses import dataclass, field
@@ -24,16 +25,7 @@ class BenchmarkResult:
     failures: list[dict[str, Any]] = field(default_factory=list)
 
     def to_dict(self) -> dict[str, Any]:
-        return {
-            "top_1_accuracy": self.top_1_accuracy,
-            "top_5_accuracy": self.top_5_accuracy,
-            "mean_latency_ms": self.mean_latency_ms,
-            "p95_latency_ms": self.p95_latency_ms,
-            "total_images": self.total_images,
-            "correct_top_1": self.correct_top_1,
-            "correct_top_5": self.correct_top_5,
-            "failures": self.failures,
-        }
+        return dataclasses.asdict(self)
 
     def to_json(self) -> str:
         return json.dumps(self.to_dict(), indent=2)
