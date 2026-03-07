@@ -180,7 +180,7 @@ Build the command-line interface for all major operations.
 - [x] `uv run ruff check src/ tests/` — no lint errors
 - [x] Verify package installs cleanly: `uv pip install -e .`
 - [x] Verify CLI entry point works: `uv run mtg-ocr --help`
-- [ ] Create PR: `gh pr create --title "feat: Phase 3-4 — export pipeline, batch scanning, CLI, test suite" --body "$(cat <<'EOF'
+- [x] Create PR: `gh pr create --title "feat: Phase 3-4 — export pipeline, batch scanning, CLI, test suite" --body "$(cat <<'EOF'
 ## Context
 
 Phase 1-2 established the core visual identification pipeline (MobileCLIP encoder, embedding search, card detection). This PR adds the deployment and usability layers: ONNX/CoreML export for on-device inference, batch scanning for rig mode, embedding dimension reduction, a comprehensive CLI, and difficult conditions test suite.
@@ -204,4 +204,4 @@ Phase 1-2 established the core visual identification pipeline (MobileCLIP encode
 
 EOF
 )"
-- [ ] Assign PR for review
+- [x] Assign PR for review
