@@ -25,3 +25,17 @@ class EmbeddingRecord(BaseModel):
     card_name: str
     set_code: str
     embedding: list[float]
+
+
+class ScanResult(BaseModel):
+    image_path: str
+    matches: list[CardMatch]
+    latency_ms: float
+
+
+class ScanReport(BaseModel):
+    results: list[ScanResult]
+    total_cards: int
+    avg_latency_ms: float
+    cards_per_minute: float
+    elapsed_seconds: float

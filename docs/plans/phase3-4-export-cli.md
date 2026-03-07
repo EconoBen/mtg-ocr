@@ -37,8 +37,8 @@ Create test fixtures and test cases for difficult card identification scenarios.
 
 Build the batch scanning orchestrator for the Card Slinger rig.
 
-- [ ] Create `src/mtg_ocr/scanning/__init__.py`
-- [ ] Create `src/mtg_ocr/scanning/batch.py` with `BatchScanner` class:
+- [x] Create `src/mtg_ocr/scanning/__init__.py`
+- [x] Create `src/mtg_ocr/scanning/batch.py` with `BatchScanner` class:
   ```python
   class BatchScanner:
       """Batch card scanning for rig-mounted setups.
@@ -50,7 +50,7 @@ Build the batch scanning orchestrator for the Card Slinger rig.
       def scan_directory(self, input_dir: Path, output_path: Path | None = None) -> ScanReport: ...
       def scan_images(self, images: list[Path]) -> ScanReport: ...
   ```
-- [ ] Create `ScanReport` dataclass in `src/mtg_ocr/models/card.py`:
+- [x] Create `ScanReport` dataclass in `src/mtg_ocr/models/card.py`:
   ```python
   class ScanResult(BaseModel):
       image_path: str
@@ -64,9 +64,9 @@ Build the batch scanning orchestrator for the Card Slinger rig.
       cards_per_minute: float
       elapsed_seconds: float
   ```
-- [ ] Use `concurrent.futures.ThreadPoolExecutor` for parallel image loading (I/O bound), sequential pipeline inference
-- [ ] Write tests in `tests/unit/test_batch_scanner.py` — mock the pipeline, verify parallel loading, report stats
-- [ ] Run: `uv run pytest tests/unit/test_batch_scanner.py -v` — all tests pass
+- [x] Use `concurrent.futures.ThreadPoolExecutor` for parallel image loading (I/O bound), sequential pipeline inference
+- [x] Write tests in `tests/unit/test_batch_scanner.py` — mock the pipeline, verify parallel loading, report stats
+- [x] Run: `uv run pytest tests/unit/test_batch_scanner.py -v` — all tests pass
 
 ### Task 3: Embedding Dimension Reduction (T10)
 
