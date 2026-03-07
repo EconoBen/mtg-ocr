@@ -100,8 +100,8 @@ Implement and test dimension reduction for embeddings (512 -> 256 -> 128).
 
 Export the MobileCLIP image encoder to ONNX format.
 
-- [ ] Create `src/mtg_ocr/export/__init__.py`
-- [ ] Create `src/mtg_ocr/export/onnx_export.py`:
+- [x] Create `src/mtg_ocr/export/__init__.py`
+- [x] Create `src/mtg_ocr/export/onnx_export.py`:
   ```python
   class ONNXExporter:
       """Export visual encoder to ONNX format."""
@@ -111,15 +111,15 @@ Export the MobileCLIP image encoder to ONNX format.
       def validate(self, onnx_path: Path, test_image: Image.Image,
                    rtol: float = 1e-3) -> bool: ...
   ```
-- [ ] `ExportResult` dataclass: `output_path`, `model_size_mb`, `quantized`, `opset_version`, `input_shape`, `output_shape`
-- [ ] Export flow: get a dummy input tensor (1, 3, 224, 224), trace the model with `torch.onnx.export`, optionally quantize with `onnxruntime.quantization`
-- [ ] Validation compares PyTorch output vs ONNX Runtime output on same input image (within rtol)
-- [ ] Write tests in `tests/unit/test_onnx_export.py`:
+- [x] `ExportResult` dataclass: `output_path`, `model_size_mb`, `quantized`, `opset_version`, `input_shape`, `output_shape`
+- [x] Export flow: get a dummy input tensor (1, 3, 224, 224), trace the model with `torch.onnx.export`, optionally quantize with `onnxruntime.quantization`
+- [x] Validation compares PyTorch output vs ONNX Runtime output on same input image (within rtol)
+- [x] Write tests in `tests/unit/test_onnx_export.py`:
   - Mock the encoder's model to avoid downloading MobileCLIP in CI
   - Test export produces valid .onnx file
   - Test quantization reduces file size
   - Test validation catches mismatched outputs
-- [ ] Run: `uv run pytest tests/unit/test_onnx_export.py -v` — all tests pass
+- [x] Run: `uv run pytest tests/unit/test_onnx_export.py -v` — all tests pass
 
 ### Task 5: CoreML Export for iOS (T17)
 
