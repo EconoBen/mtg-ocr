@@ -100,6 +100,16 @@ class CardIdentificationPipeline:
 
         index = EmbeddingIndex()
         index.load(model_dir / "embeddings.npz")
+
+        # If a dimension reducer sidecar exists, wrap the encoder so query
+        # embeddings are projected to the same reduced space as the index.
+        reducer_path = model_dir / "embeddings.reducer.npz"
+        if reducer_path.exists():
+            from mtg_ocr.embeddings.quantize import DimensionReducer
+
+            reducer = DimensionReducer.load(reducer_path)
+            encoder = _ReducedEncoder(encoder, reducer)
+
         detector = CardDetector(scan_mode=scan_mode)
 
         return cls(encoder=encoder, index=index, detector=detector)
@@ -116,3 +126,20 @@ class CardIdentificationPipeline:
             rgb = np.array(image.convert("RGB"))
             return cv2.cvtColor(rgb, cv2.COLOR_RGB2BGR)
         return image
+
+
+class _ReducedEncoder:
+    """Wraps an encoder to project query embeddings through a DimensionReducer."""
+
+    def __init__(self, encoder: VisualEncoder, reducer) -> None:
+        self._encoder = encoder
+        self._reducer = reducer
+
+    @property
+    def embedding_dim(self) -> int:
+        return self._reducer.target_dim
+
+    def encode_image(self, image: Image.Image) -> np.ndarray:
+        raw = self._encoder.encode_image(image)
+        reduced = self._reducer.transform(raw.reshape(1, -1))
+        return reduced.squeeze(0)

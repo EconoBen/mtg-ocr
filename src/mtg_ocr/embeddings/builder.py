@@ -111,7 +111,7 @@ class EmbeddingBuilder:
         path = _ensure_npz_suffix(Path(path))
         data = np.load(path, allow_pickle=False)
         embeddings = data["embeddings"]
-        card_ids = [s for s in data["card_ids"]]
+        card_ids = [str(s) for s in data["card_ids"]]
 
         meta_path = _meta_path(path)
         metadata: dict[str, CardInfo] = {}
@@ -143,7 +143,7 @@ class EmbeddingBuilder:
         if keep_indices:
             filtered_emb = new_embeddings[keep_indices]
             filtered_ids = [new_card_ids[i] for i in keep_indices]
-            filtered_meta = {cid: new_metadata[cid] for cid in filtered_ids}
+            filtered_meta = {cid: new_metadata[cid] for cid in filtered_ids if cid in new_metadata}
 
             merged_emb = np.concatenate(
                 [old_emb.astype(np.float32), filtered_emb.astype(np.float32)], axis=0
@@ -190,7 +190,7 @@ class EmbeddingBuilder:
 
         from mtg_ocr.data.scryfall import RATE_LIMIT_SECONDS
 
-        bulk_path = self.scryfall_client.download_bulk_data()
+        bulk_path = self.scryfall_client.download_bulk_data(force_refresh=True)
         cards = self.scryfall_client.build_card_dictionary(bulk_path)
         image_uris = self.scryfall_client.get_image_uris(cards)
 
@@ -260,7 +260,7 @@ class EmbeddingBuilder:
         _, existing_ids, _ = self.load_embeddings(existing_path)
         existing_set = set(existing_ids)
 
-        bulk_path = self.scryfall_client.download_bulk_data()
+        bulk_path = self.scryfall_client.download_bulk_data(force_refresh=True)
         cards = self.scryfall_client.build_card_dictionary(bulk_path)
         image_uris = self.scryfall_client.get_image_uris(cards)
 
@@ -307,11 +307,18 @@ class EmbeddingBuilder:
         if meta_src.exists():
             shutil.copy2(meta_src, _meta_path(output_npz))
 
+        # Read dimension from the existing file rather than the encoder,
+        # in case the DB was built with a different model/dimension.
+        # shape[1] is valid even when shape[0] == 0 (numpy preserves 2D shape).
+        with np.load(existing_npz, allow_pickle=False) as existing_data:
+            embeddings = existing_data["embeddings"]
+            existing_dim = embeddings.shape[1] if embeddings.ndim >= 2 else self.encoder.embedding_dim
+
         return EmbeddingStats(
             total_cards=len(existing_ids),
             new_cards=0,
             skipped_cards=0,
-            embedding_dim=self.encoder.embedding_dim,
+            embedding_dim=existing_dim,
             file_size_mb=round(
                 existing_npz.stat().st_size / (1024 * 1024), 2
             ),
