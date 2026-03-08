@@ -6,6 +6,8 @@ without errors and produces valid images (correct shape, dtype, value range).
 
 from __future__ import annotations
 
+from collections.abc import Callable
+
 import numpy as np
 import pytest
 
@@ -205,7 +207,7 @@ class TestAllConditionsCombined:
         create_fullart_card,
     ])
     def test_full_augmentation_pipeline(
-        self, card_factory: callable, heavy_aug: CardAugmentation
+        self, card_factory: Callable, heavy_aug: CardAugmentation
     ) -> None:
         card = create_card_on_background(card_factory())
         result = heavy_aug(card)

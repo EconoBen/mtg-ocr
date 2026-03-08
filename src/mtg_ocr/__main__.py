@@ -42,7 +42,8 @@ def scan(image_path, dir_path, top_k, mode, output, workers, model_dir) -> None:
     if image_path:
         from PIL import Image
 
-        img = Image.open(image_path).convert("RGB")
+        with Image.open(image_path) as raw_img:
+            img = raw_img.convert("RGB")
         result = pipeline.identify(img, top_k=top_k)
 
         if not result.matches:
@@ -195,11 +196,18 @@ def reduce(input_path, output, dim, method) -> None:
         save_dict["card_ids"] = data["card_ids"]
     np.savez(output, **save_dict)
 
+    # Copy metadata sidecar if it exists alongside the source embeddings
+    import shutil
+
+    src_meta = Path(str(input_path).removesuffix(".npz") + ".meta.json")
+    if src_meta.exists():
+        dst_meta = Path(str(output).removesuffix(".npz") + ".meta.json")
+        shutil.copy2(src_meta, dst_meta)
+
     # Save the fitted reducer so it can be applied to query embeddings at inference time
-    if method == "pca":
-        reducer_path = output.with_suffix(".reducer.npz")
-        reducer.save(reducer_path)
-        click.echo(f"Reducer saved to {reducer_path}")
+    reducer_path = output.with_suffix(".reducer.npz")
+    reducer.save(reducer_path)
+    click.echo(f"Reducer saved to {reducer_path}")
 
     click.echo(f"Reduced {report.original_dim}D -> {report.target_dim}D ({report.method})")
     click.echo(f"Variance retained: {report.variance_retained:.2%}")
