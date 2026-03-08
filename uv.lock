@@ -868,6 +868,7 @@ name = "mtg-ocr"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "click" },
     { name = "httpx" },
     { name = "imagehash" },
     { name = "mobileclip" },
@@ -898,6 +899,7 @@ training = [
 [package.metadata]
 requires-dist = [
     { name = "albumentations", marker = "extra == 'training'" },
+    { name = "click", specifier = ">=8.1" },
     { name = "coremltools", marker = "extra == 'export'" },
     { name = "httpx" },
     { name = "imagehash" },

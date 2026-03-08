@@ -18,6 +18,7 @@ dependencies = [
     "numpy",
     "imagehash",
     "opencv-python-headless>=4.8",
+    "click>=8.1",
 ]
 
 [project.optional-dependencies]
@@ -36,7 +37,7 @@ dev = [
 ]
 
 [project.scripts]
-mtg-ocr = "mtg_ocr.__main__:main"
+mtg-ocr = "mtg_ocr.__main__:cli"
 
 [tool.hatch.metadata]
 allow-direct-references = true
