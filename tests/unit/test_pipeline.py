@@ -213,3 +213,42 @@ class TestPipelineBatch:
         # First should have matches, second should be empty
         assert len(results[0].matches) > 0
         assert len(results[1].matches) == 0
+
+
+class TestReducedEmbeddings:
+    """Test that pipeline works with dimension-reduced embeddings."""
+
+    def test_from_pretrained_loads_reducer(self, tmp_path):
+        from mtg_ocr.embeddings.quantize import DimensionReducer
+        from mtg_ocr.pipeline import CardIdentificationPipeline
+
+        # Create a 128-d reduced embedding index
+        # PCA requires n_samples >= target_dim
+        target_dim = 128
+        n_cards = 200
+        rng = np.random.default_rng(42)
+        full_embeddings = rng.standard_normal((n_cards, EMBEDDING_DIM)).astype(np.float32)
+
+        reducer = DimensionReducer(method="pca", target_dim=target_dim)
+        reduced = reducer.fit_transform(full_embeddings)
+
+        # Save reduced embeddings
+        card_ids = [f"card-{i}" for i in range(n_cards)]
+        np.savez(
+            tmp_path / "embeddings.npz",
+            embeddings=reduced.astype(np.float16),
+            card_ids=np.array(card_ids),
+        )
+
+        # Save reducer sidecar
+        reducer.save(tmp_path / "embeddings.reducer.npz")
+
+        pipeline = CardIdentificationPipeline.from_pretrained(
+            tmp_path, encoder=MockEncoder()
+        )
+
+        # Query should work — pipeline auto-applies reducer to 512-d query
+        assert pipeline.encoder.embedding_dim == target_dim
+        img = Image.new("RGB", (224, 224), "red")
+        embedding = pipeline.encoder.encode_image(img)
+        assert embedding.shape == (target_dim,)
